@@ -195,19 +195,9 @@
 
                             <div class="row px-3">
                                 <label class="mb-1"><h6 class="mb-0 text-sm">Whatsapp</h6></label>
-                                <input class="mb-4" type="tel" name="whatsapp" placeholder="Enter a valid whatsapp" required autofocus autocomplete="whatsapp">
+                                <input class="mb-4" type="text" name="whatsapp" id="whatsapp" placeholder="Enter a valid whatsapp" pattern="\d+" required autofocus autocomplete="username">
                             </div>
-
-                            <div class="row px-3">
-                            <label class="mb-2"><h6 class="mb-0 text-sm">User Level</h6></label>
-                            <select class="form-select" id="usertype" name="usertype" required aria-label="Floating label select example">
-                                <option value="" disabled selected>Select user level</option>
-                                <option value="admin">Admin</option>
-                                <option value="superadmin">Superadmin</option>
-                                <option value="user">User</option>
-                            </select>
-                        </div>`
-
+                            
                             <div class="row px-3">
                                 <label class="mb-1"><h6 class="mb-0 text-sm">Password</h6></label>
                                 <input type="password" name="password" placeholder="Enter password" required autocomplete="current-password">
@@ -255,5 +245,13 @@
             </div>
         </div>
     </form>
+    <script>
+        document.getElementById('whatsapp').addEventListener('input', function (e) {
+            let value = e.target.value;
+            // Remove non-numeric characters
+            e.target.value = value.replace(/\D/g, '');
+        });
+    </script>
 </body>
 </html>
+

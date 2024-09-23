@@ -12,6 +12,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    public function opd()
+    {
+        return $this->belongsTo(Opd::class);
+    }
+    
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
@@ -30,8 +35,7 @@ class User extends Authenticatable
         'usertype',
         'whatsapp',
         'username',
-        'dinas',
-        'opd',
+        'opd_id',
         'alamat',
     ];
 

@@ -16,14 +16,21 @@ class Admin
     public function handle(Request $request, Closure $next): Response
     {
 
-        if(Auth::user()->usertype== 'admin')
-        {
-        return $next($request);
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            if ($user->usertype == 'user') {
+                return redirect()->route('user.home');
+            } else if ($user->usertype == 'admin') {
+                return redirect()->route('admin.home');
+            } else if ($user->usertype == 'superadmin') {
+                return redirect()->route('superadmin.home');
+            } else {
+                // Optional: Handle unknown user types
+                return redirect()->route('login')->with('error', 'Unknown user type.');
+            }
+        } else {
+            return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
         }
-
-        return redirect('/');
-
     }
-
-    
 }

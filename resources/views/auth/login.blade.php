@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
     
-  <style>
+    <style>
         body {
             color: #000;
             overflow-x: hidden;
@@ -28,12 +28,18 @@
             margin: 0px 40px;
         }
         
-        
+        .welcome-message {
+            font-size:34px; /* Larger font size */
+            font-weight: bold;
+            font-family: 'Arial Black', Arial, sans-serif;
+            color: #3366FF; /* Example color: Deep Orange */
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 30px;   
+        }
         .image {
              width: 650px;
-             height: auto;
-             display: block;
-            margin: 0 auto;
+             height: auto px;
         }
         
         
@@ -70,7 +76,7 @@
         }
         
         input, textarea, select {
-            padding: 8px 10px;
+            padding: 10px 12px;
     border: 1px solid lightgrey;
     border-radius: 2px;
     margin-bottom: 15px; /* Jarak antar form elemen */
@@ -79,7 +85,6 @@
     color: #2C3E50;
     font-size: 14px;
     letter-spacing: 1px;
-
         }
         
         input:focus, textarea:focus {
@@ -105,16 +110,6 @@
             border-radius: 2px;
         }
         
-        .welcome-message {
-            font-size:36px; /* Larger font size */
-            font-weight: bold;
-            font-family: 'Arial Black', Arial, sans-serif;
-            color: #3366FF; /* Example color: Deep Orange */
-            text-align: center;
-            margin-bottom: 40px;
-            margin-top: 80px;
-        }
-
         .btn-blue:hover {
             background-color: #000; /* Updated hover color */
             cursor: pointer;
@@ -136,22 +131,8 @@
                 margin: 0px 15px;
             }
         }
+
     </style>
-
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-    function refreshCaptcha() {
-        var captchaImage = document.getElementById('captcha-image');
-        captchaImage.src = '{{ captcha_src() }}?' + new Date().getTime();
-    }
-    $(document).ready(function() {
-        @if ($errors->has('captcha'))
-            $('#captcha-error').text('{{ $errors->first('captcha') }}').show();
-        @endif
-    });
-</script>
 
 </head>
 <body>
@@ -161,16 +142,10 @@
         <h2 class="m-0 text-primary ms-0">DISKOMINFO</h2>
     </a>
     </nav>
-    @if (session('status'))
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ $value }}
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-        <x-validation-errors class="mb-4" />
+     <form method="POST" action="{{ route('login.post') }}">
+      @csrf
         <div class="container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
+        <x-validation-errors class="mb-4" />
             <div class="card card0 border-0">
                 <div class="row d-flex">
                     <div class="col-lg-6">
@@ -197,17 +172,6 @@
                             </div>
 
                             <div class="row px-3">
-                            <label class="mb-1"><h6 class="mb-0 text-sm">User Level</h6></label>
-                            <select class="form-select" id="usertype" name="usertype" required aria-label="Floating label select example">
-                                <option value="" disabled selected>Select user level</option>
-                                <option value="admin">Admin</option>
-                                <option value="superadmin">Superadmin</option>
-                                <option value="user">User</option>
-                            </select>
-                        </div>
-
-
-                            <div class="row px-3">
                                 <label class="mb-1"><h6 class="mb-0 text-sm">Password</h6></label>
                                 <input type="password" name="password" placeholder="Enter password" required autocomplete="current-password">
                             </div>
@@ -216,17 +180,12 @@
                             <div class="mb-3">
                                 <img id="captcha-image" src="{{ captcha_src() }}" alt="Captcha Image">
                             </div>
-                        
                             <div class="input-group mb-3">
-                                <input type="text" name="captcha" class="form-control @error('captcha') is-invalid @enderror" placeholder="Enter Captcha" required>
+                                <input type="text" name="captcha" class="form-control" placeholder="Enter Captcha" required>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="button" onclick="refreshCaptcha()">Refresh</button>
                                 </div>
                             </div>
-                            @error('captcha') 
-                            <div class="invalid-feedback">{{ $message }}</div> 
-                            @enderror 
-                            
 
                             <div class="row px-3 mb-4">
                                 <div class="custom-control custom-checkbox custom-control-inline">
@@ -254,4 +213,16 @@
         </div>
     </form>
 </body>
+
+<script>
+        function refreshCaptcha() {
+            var captchaImage = document.getElementById('captcha-image');
+            captchaImage.src = '{{ captcha_src() }}?' + new Date().getTime();
+        }
+        $(document).ready(function() {
+            @if ($errors->has('captcha'))
+                $('#captcha-error').text('{{ $errors->first('captcha') }}').show();
+            @endif
+        });
+    </script>
 </html>

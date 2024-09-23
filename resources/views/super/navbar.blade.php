@@ -10,6 +10,7 @@
     width: 80px; /* Adjust width as needed */
     height: auto; /* Maintain aspect ratio */
 }
+
 </style>
 
 <div class="container-scroller">
@@ -87,6 +88,7 @@
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
               <img src="{{asset('super/images/faces/profil.png')}}" alt="profile"/>
+              <span class="profile-name ml-2">{{ Auth::user()->name }}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
               <a class="dropdown-item" href="{{ route('profile.show') }}">

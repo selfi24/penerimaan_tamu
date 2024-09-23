@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Tamu extends Model
 {
     use HasFactory;
+    
+    public function opd()
+    {
+        return $this->belongsTo(Opd::class);
+    }
+
 
     protected $fillable = [
         'nama',
         'alamat',
-        'opd',
+        'opd_id',
         'keperluan',
         'webcamImage',
     ];

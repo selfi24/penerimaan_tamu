@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Validation\ValidationException;
+
 use Illuminate\Support\Facades\Log;
+
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 
@@ -77,23 +81,41 @@ class UserController extends Controller
         'username' => 'required|string|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
-        'whatsapp' => 'required|string|max:20',
+        'whatsapp' =>'required|string|regex:/^\d+$/|min:10|max:15',
         'alamat' => 'required|string|max:255',
-        'usertype' => 'required|string|max:10',
-        'opd' => 'required|string|max:100',
+        'current_password' => 'nullable|string',
+        'new_password' => 'nullable|string|confirmed|min:8',
     ]);
+
+
+    // Jika ada new_password, validasi current_password
+    if ($request->filled('new_password') && !$request->filled('current_password')) {
+        return redirect()->back()->withErrors([
+            'current_password' => 'Current password is required to change the password.'
+        ]);
+    }
+
+    // Periksa jika current_password diisi dan valid
+    if ($request->filled('current_password') && !Hash::check($request->input('current_password'), $user->password)) {
+        throw ValidationException::withMessages([
+            'current_password' => ['The current password is incorrect.'],
+        ]);
+    }
 
     $user->username = $request->input('username');
     $user->name = $request->input('name');
     $user->email = $request->input('email');
     $user->whatsapp = $request->input('whatsapp');
     $user->alamat = $request->input('alamat');
-    $user->usertype = $request->input('usertype');
-    $user->opd = $request->input('opd');
-    $user->update($request->all());
+    
+    // Update password if a new password is provided
+    if ($request->filled('new_password')) {
+        $user->password = Hash::make($request->input('new_password'));
+    }
+
     $user->save();
 
-    return redirect()->route('profile.edit')->with('message', 'Profile updated successfully!');
+    return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
 }
 
 public function destroy(Request $request)
@@ -111,41 +133,41 @@ public function destroy(Request $request)
 
 public function upload(Request $request)
 {
-    // Validate the request
-    $validator = Validator::make($request->all(), [
-        'nama' => 'required|string|string|max:255',
-        'alamat' => 'required|string',
-        'opd' => 'required|string',
-        'keperluan' => 'required|string|string|max:1000',
-        'webcamImage' => 'nullable|string',
-    ]);
+   // Validate the request
+   $validator = Validator::make($request->all(), [
+    'nama' => 'required|string|string|max:255',
+    'alamat' => 'required|string',
+    'opd_id' =>'required|exists:opds,id',
+    'keperluan' => 'required|string|string|max:100000',
+    'webcamImage' => 'nullable|string',
+]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
-    }
+if ($validator->fails()) {
+    return response()->json(['errors' => $validator->errors()], 422);
+}
 
-    // Handle the webcam image
-    $imagePath = null;
-    if ($request->has('webcamImage')) {
-        $imageData = $request->input('webcamImage');
-        $imageData = str_replace('data:image/png;base64,', '', $imageData);
-        $imageData = str_replace(' ', '+', $imageData);
-        $image = base64_decode($imageData);
-        $imageName = 'webcam_capture_' . time() . '.png';
-        $imagePath = 'uploads/' . $imageName;
-        Storage::disk('public')->put($imagePath, $image);
-    }
+// Handle the webcam image
+$imagePath = null;
+if ($request->has('webcamImage')) {
+    $imageData = $request->input('webcamImage');
+    $imageData = str_replace('data:image/png;base64,', '', $imageData);
+    $imageData = str_replace(' ', '+', $imageData);
+    $image = base64_decode($imageData);
+    $imageName = 'webcam_capture_' . time() . '.png';
+    $imagePath = 'uploads/' . $imageName;
+    Storage::disk('public')->put($imagePath, $image);
+}
 
-    // Create a newGuest record
-    $tamu = new Tamu();
-    $tamu->nama = $request->input('nama');
-    $tamu->alamat = $request->input('alamat');
-    $tamu->opd = $request->input('opd');
-    $tamu->keperluan = $request->input('keperluan');
-    $tamu->webcamImage = $imagePath;
-    $tamu->save();
+// Create a newGuest record
+$tamu = new Tamu();
+$tamu->nama = $request->input('nama');
+$tamu->alamat = $request->input('alamat');
+$tamu->opd_id = $request->input('opd_id');
+$tamu->keperluan = $request->input('keperluan');
+$tamu->webcamImage = $imagePath;
+$tamu->save();
 
-    return redirect()->route('tamu')->with('message', 'Data tamu berhasil dikirim');
+    return redirect()->route('tamu')->with('success', 'Data tamu berhasil dikirim');
 }
 
 public function tamu()
@@ -155,7 +177,7 @@ public function tamu()
     
     $opd = Opd::all();
 
-    $tamu = Tamu::where('opd', $user->opd)->get();
+    $tamu = Tamu::where('opd_id', $user->opd_id)->get();
    
     return view('super.entry_tamu', compact('tamu','opd'));
 }
@@ -164,7 +186,7 @@ public function show_tamu()
     {
         $user = auth()->user();
 
-        $tamu = Tamu::where('opd', $user->opd)->get();
+        $tamu = Tamu::where('opd_id', $user->opd_id)->get();
 
         $opd = Opd::all() ?? [];
 
@@ -181,7 +203,7 @@ public function show_tamu()
         $user = auth()->user();
 
         $tamu = Tamu::find($id);
-        if (!$tamu || $tamu->opd !== $user->opd) {
+        if (!$tamu || $tamu->opd !== $user->opd_id) {
             Log::warning('Tamu not found for ID: ' . $id);
             return redirect()->back()->with('message', 'Data tamu tidak ditemukan.');
         }
@@ -192,64 +214,64 @@ public function show_tamu()
         return redirect()->back()->with('message', 'Data tamu berhasil dihapus.');
     }
 
-    public function update_tamu(Request $request, $id)
+    public function ed_tamu($id)
     {
-        $user = auth()->user();
-        $tamu = Tamu::find($id);
+    $tamu = Tamu::find($id);
+    
+    $opd = Opd::all();
+    
+    return view('super.edit_tamu', compact('tamu', 'opd'));
+    }
 
-        if (!$tamu || $tamu->opd !== $user->opd) {
-            return redirect()->back()->with('message', 'Anda tidak memiliki izin untuk memperbarui data ini.');
+    public function up_tamu(Request $request, $id)
+    {
+       
+        // Find the Tamu by ID
+    $tamu = Tamu::find($id);
+
+    // Check if Tamu exists
+    if (!$tamu) {
+        return redirect()->back()->with('error', 'Tamu not found.');
+    }
+
+    // Validate the request data
+    $validated = $request->validate([
+        'nama' => 'required|string|max:255',
+        'alamat' => 'required|string',
+        'opd_id' => 'required|exists:opds,id',
+        'keperluan' => 'required|string|max:1000',
+        'webcamImage' => 'nullable|file|image|max:2048',// For file upload
+         ]);
+
+    // Update Tamu record fields
+    $tamu->nama = $request->input('nama');
+    $tamu->alamat = $request->input('alamat');
+    $tamu->opd_id = $request->input('opd_id');
+    $tamu->keperluan = $request->input('keperluan');
+
+
+    // Handle file input (photo)
+    if ($request->hasFile('webcamImage')) {
+        // Optionally delete old photo if necessary
+        if ($tamu->webcamImage && Storage::disk('public')->exists('uploads/' . $tamu->webcamImage)) {
+            Storage::disk('public')->delete('uploads/' . $tamu->webcamImage);
         }
 
-        $tamu->update($request->all());
-        return redirect()->back()->with('success', 'Guest updated successfully!');
-    }
+        // Store new photo
+        $file = $request->file('webcamImage');
+        $imageName = 'webcam_capture_' . time() . '.' . $file->getClientOriginalExtension();
+        $file->storeAs('public/', $imageName);
 
+        // Update Tamu record with the new file path
+        $tamu->webcamImage = $imageName;
+        
+    }
+    
+    // Save the updated Tamu record
+    $tamu->save();
+
+        return redirect()->back()->with('success', 'Tamu berhasil di update!');
+    }
    
-    public function opd()
-    {
-        $opds = Opd::paginate(7);
-
-        return view('super.opd' ,compact('opds')); // Adjust the view path as needed
-    }
-
-    // Store a newly created department in storage
-    public function add_dinas(Request $request)
-    {
-        
-        $opd = new Opd;
-
-        $opd->dinas= $request->opd;
-
-        $opd->save();
-        // Redirect to the form with a success message
-        return redirect()->back()->with('message', 'Dinas added successfully!');
-    }
-
-
-    public function opd_delete($id)
-    {
-        $opd= Opd::find($id);
-
-        $opd->delete();
-
-        return redirect()->back()->with('success','Dinas berhasil dihapus');
-    }
-
-    public function update_opd(Request $request,$id)
-    {
-
-        $opd = Opd::find($id);
-
-        
-
-            $opd->dinas = $request->dinas;
-
-            $opd->save();
-
-            return redirect()->back()->with('message', 'Dinas updated successfully!');
-        
-    }
-
 }
 

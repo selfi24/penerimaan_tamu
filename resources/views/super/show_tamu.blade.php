@@ -312,22 +312,24 @@ select.form-control {
                         <h4 class="card-title">List Tamu</h4>
                         <p class="card-description">List of all guests with their details</p>         
                         <div class="div_center">
-                        @if(session()->has('message'))
-                        <div class="alert alert-danger">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-                        {{ session()->get('message') }}
-                        </div>
+                        @if (session('success'))
+                            <div class="alert alert-success border-left-success alert-dismissible fade show" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
                         @endif
-                    </div>
 
-                    <div class="div_center">
-                        @if(session()->has('success'))
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-                        {{ session()->get('success') }}
-                        </div>
+                        @if ($errors->any())
+                            <div class="alert alert-danger border-left-danger" role="alert">
+                                <ul class="pl-4 my-2">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         @endif
-                    </div> 
 
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -345,7 +347,7 @@ select.form-control {
                                     @foreach($tamu as $item)
                                         <tr>
                                             <td>{{ $item->nama }}</td>
-                                            <td>{{ $item->opd }}</td>
+                                            <td>{{ $item->opd->dinas }}</td>
                                             <td>{{ $item->alamat }}</td>
                                             <td>
                                                 <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" onclick="openModal({{ json_encode($item->keperluan) }})" aria-label="View details">
@@ -356,7 +358,7 @@ select.form-control {
                                                     <i class="fas fa-camera" style="font-size: 24px; color: black;"></i>
                                                 </a></td>
                                                 <td>
-    <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" aria-label="Edit" onclick="editGuest({{ json_encode($item) }})">
+                                                <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" aria-label="Edit" href ="{{ route('edit.tamu' , $item->id)  }}">
         <i class="fas fa-edit" style="font-size: 24px; color: blue;"></i>
     </a>
     <form action="{{ route('delete', $item->id) }}" method="POST" style="display:inline;">
@@ -400,7 +402,7 @@ select.form-control {
         <span class="close" onclick="closeEditModal()">&times;</span>
         <div id="modal-body">
             <!-- Form content here -->
-            <form id="editForm" action="" method="POST">
+            <form id="editForm" action="{{ route('tamu.update', $item->id) }}" method="POST" enctype="multipart/form-data">>
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" id="edit-id">
@@ -422,14 +424,16 @@ select.form-control {
                      </div>
                 </div>
                 <div class="form-group">
-                    <label for="edit-alamat">Alamat</label>
-                    <input type="text" name="alamat" id="edit-alamat" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-keperluan">Keperluan</label>
-                    <textarea name="keperluan" id="edit-keperluan" class="form-control" required></textarea>
-                </div>
-                <div class="form-group">
+        <label for="edit-alamat">Alamat<span class="text-danger">*</span></label>
+        <input type="text" name="alamat" id="edit-alamat" class="form-control" required placeholder="Enter Address">
+    </div>
+
+    <div class="form-group">
+        <label for="edit-keperluan">Keperluan<span class="text-danger">*</span></label>
+        <textarea name="keperluan" id="edit-keperluan" class="form-control" required placeholder="Enter Purpose" rows="4"></textarea>
+    </div>
+
+    <div class="form-group">
                     <label for="edit-photo">Foto</label>
                     <input type="file" name="photo" id="edit-photo" class="form-control">
                 </div>
@@ -496,6 +500,7 @@ function closeDetailsModal() {
 
 // Function to open the photo modal with the photo URL
 function openPhotoModal(photoUrl) {
+    console.log('Photo URL:', photoUrl);
     const modal = document.getElementById('photoModal');
     document.getElementById('photo-modal-body').innerHTML = `
         <img src="${photoUrl}" alt="Guest Photo" style="width: 100%; height: auto;">

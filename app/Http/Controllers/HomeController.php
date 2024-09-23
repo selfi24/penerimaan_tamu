@@ -19,37 +19,7 @@ use Illuminate\Support\Facades\Validator;
 class HomeController extends Controller
 {
 
-    public function login(Request $request)
-    {
-        // Validasi input
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string',
-            'usertype' => 'required|in:admin,superadmin,user',
-            'password' => 'required',
-            'captcha' => 'required|captcha',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-        $credentials = $request->only('email', 'password');
-    $usertype = $request->input('usertype');
-
-    // Cek kredensial dan usertype
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        if ($user->usertype !== $usertype) {
-            Auth::logout();
-            return redirect()->back()->withErrors(['usertype' => 'User type does not match.'])->withInput();
-        }
-
-        // Login berhasil
-        return redirect()->intended('dashboard'); // Ganti dengan route yang sesuai
-    }
-
-    // Jika login gagal
-    return redirect()->back()->withErrors(['password' => 'Invalid credentials.'])->withInput();
-}
+    
     
     
     public function index()
@@ -63,9 +33,14 @@ class HomeController extends Controller
 
             return view('admin.home');
 
-        } else {
+        } else if ($user->usertype == 'admin') {
 
             return view('super.index');
+
+        } else if ($user->usertype == 'superadmin') {
+
+            return view('superadmin.index');
+
         }
     } else {
        
