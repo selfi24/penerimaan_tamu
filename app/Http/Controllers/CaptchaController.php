@@ -74,4 +74,12 @@ class CaptchaController extends Controller
     {
         return response()->json(['captcha' => captcha_img()]);
     }
+
+  
+public function authenticated(Request $request, $user)
+{
+    // Assuming the user has an opd_id field
+    session(['opd_id' => $user->opd_id]);
+}
+
 }

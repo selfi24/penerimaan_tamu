@@ -1,78 +1,81 @@
-<!-- Footer Start -->
-<div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        
-        <div class="container py-5">
-                    <div class="row g-5">
-                        <div class="col-lg-3 col-md-6">
-                            <h4 class="text-white mb-3">Quick Link</h4>
-                            <a class="btn btn-link" href="{{ route('buku_tamu') }}">Buku Tamu</a>
-                            <a class="btn btn-link" href="">Entry Tamu</a>
-                            <a class="btn btn-link" href="{{ route('contact') }}">Contact Us</a>
-                         </div>
-                        <div class="col-lg-3 col-md-6">
-                            <h4 class="text-white mb-3">Contact</h4>
-                            <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Gedung OPD Bersama, Jl. Kartini No.1, Panggang I, Panggang, Kec. Jepara, Kabupaten Jepara, Jawa Tengah</p>
-                            <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>08990167365</p>
-                            <p class="mb-2"><i class="fa fa-globe me-3"></i>https://diskominfo.jepara.go.id/</p>
-                            
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <h4 class="text-white mb-3">Galeri</h4>
-                            <div class="row g-2 pt-2">
-                                <div class="col-4">
-                                    <img class="img-fluid bg-light p-1" src="{{asset('img/course-1.jpg')}}" alt="">
-                                </div>
-                                <div class="col-4">
-                                    <img class="img-fluid bg-light p-1" src="{{asset('img/course-2.jpg')}}" alt="">
-                                </div>
-                                <div class="col-4">
-                                    <img class="img-fluid bg-light p-1" src="{{asset('img/course-3.jpg')}}" alt="">
-                                </div>
-                                <div class="col-4">
-                                    <img class="img-fluid bg-light p-1" src="{{asset('img/course-2.jpg')}}" alt="">
-                                </div>
-                                <div class="col-4">
-                                    <img class="img-fluid bg-light p-1" src="{{asset('img/course-3.jpg')}}" alt="">
-                                </div>
-                                <div class="col-4">
-                                    <img class="img-fluid bg-light p-1" src="{{asset('img/course-1.jpg')}}" alt="">
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
-                <div class="container">
-            <div class="copyright d-flex justify-content-center align-items-center">
-                <div class="text-center">
-                    &copy; <a class="border-bottom" href="#">Aplikasi Penerimaan Tamu</a>, All Rights Reserved.
-                    Designed by <a class="border-bottom" href="https://htmlcodex.com">Selfi Sifiyana</a><br>
-                    Distributed by <a class="border-bottom" href="https://themewagon.com">Diskominfo Jepara</a>
-                </div>
-            </div>
+<footer id="footer" class="footer dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-5 col-md-12 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">Penerimaan Tamu</span>
+          </a>
+          <p>Aplikasi ini dapat digunakan untuk pendataan tamu yang datang berkunjung ke Pemerintahan Kota Jepara. Untuk informasi lebih lanjut dapat mengunjungi sosial media di bawah ini.</p>
+          <div class="social-links d-flex mt-4">
+            <a href=""><i class="bi bi-facebook"></i></a>
+            <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
+          </div>
         </div>
+
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="/home">Home</a></li>
+            <li><a href="/buku_tamu">Galeri Tamu</a></li>
+            <li><a href="/jadwal">Jadwal Tamu</a></li>
+            <li><a href="/entry_tamu">Entry Tamu</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><a href="/entry_tamu"">Add Tamu</a></li>
+            <li><a href="/buku_tamu">Galery</a></li>
+            <li><a href="/jadwal">Calendar</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+          <h4>Contact Us</h4>
+          <p>Gedung OPD Bersama</p>
+          <p>Jl. Kartini No.1, Panggang I, Panggang</p>
+          <p>Kec. Jepara, Kabupaten Jepara, Jawa Tengah</p>
+          <p class="mt-4"><strong>Phone:</strong> <span>(0291) 591492</span></p>
+          <p><strong>Email:</strong> <span>data@jepara.go.id</span></p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">2024</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by Diskominfo Jepara</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Back to Top -->
+  <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         
-                            
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Footer End -->
+
+  <!-- Vendor JS Files -->
+  <script src="{{asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+  <script src="{{asset('assets/vendor/php-email-form/validate.js')}}"></script>
+  <script src="{{asset('assets/vendor/aos/aos.js')}}"></script>
+  <script src="{{asset('assets/vendor/glightbox/js/glightbox.min.js')}}"></script>
+  <script src="{{asset('assets/vendor/purecounter/purecounter_vanilla.js')}}"></script>
+  <script src="{{asset('assets/vendor/imagesloaded/imagesloaded.pkgd.min.js')}}"></script>
+  <script src="{{asset('assets/vendor/isotope-layout/isotope.pkgd.min.js')}}"></script>
+  <script src="{{asset('assets/vendor/swiper/swiper-bundle.min.js')}}"></script>
+
+  <!-- Main JS File -->
+  <script src="{{asset('assets/js/main.js')}}"></script>
              
-        <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         
         
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="{{asset('lib/wow/wow.min.js')}}"></script>
-        <script src="{{asset('lib/easing/easing.min.js')}}"></script>
-        <script src="{{asset('lib/waypoints/waypoints.min.js')}}"></script>
-        <script src="{{asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
-        
-        <!-- Template Javascript -->
-        <script src="{{asset('js/main.js')}}"></script>
-        
-        
+       

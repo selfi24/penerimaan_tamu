@@ -2,81 +2,56 @@
 <html lang="en">
 <head>
     @include('admin.header')
-    
     <style>
-.btn-update {
-            background-color: #3399ff;
-            color: #ffffff;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            text-align: center;
-            display: inline-block;
-            margin-top: 10px;
-            text-decoration: none;
-            transition: background-color 0.3s;
+        .rounded-card {
+            border-radius: 25px; /* Rounded corners */
+            overflow: hidden; /* Ensure content respects the rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow */
+        }
+        .card-img {
+            height: 200px; /* Fixed height for images */
+            width: 100%; 
+            object-fit: cover; /* Cover the entire area */
+        }
+        .text-date {
+            color: #00b7eb; /* Blue color for the date */
+            margin-bottom: 5px; /* Space below the date */
+        }
+        .text-description {
+            color: gray; /* Gray color for description */
+        }
+        .service-header {
+            max-width: 800px; /* Limit the width */
+            margin: auto; /* Center the header */
+            margin-top: 50px; /* Increased space above the header */
+        }
+        .pagination {
+    display: flex;
+    justify-content: center;
         }
 
-        .btn-read {
-            background-color: #0066ff;
-            color: #ffffff;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            text-align: center;
-            display: inline-block;
-            text-decoration: none;
+        .light-background {
+    background-color: #f5fbff; 
         }
 
-        .btn-delete {
-            background-color: #dc3545;
-            color: #ffffff;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            text-align: center;
-            display: block;
-            margin-top: 10px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
 
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
-
-        .btn-group {
-            display: flex; /* Menggunakan flexbox untuk sejajar tombol */
-            gap: 10px; /* Jarak antara tombol */
-            align-items: center; /* Menyelaraskan tombol secara vertikal */
-        }
-</style>
-
+    </style>
 </head>
 <body>
     @include('admin.navbar')
 
-    <!-- Header Start -->
-    <div class="container-fluid bg-primary py-5 mb-5 page-header">
-        <div class="container py-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-10 text-center">
-                    <h1 class="display-3 text-white animated slideInDown">Courses</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center">
-                            <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                            <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Courses</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Header End -->
+     <!-- Page Title -->
+     <div class="page-title light-background">
+      <div class="container">
+        <h1>Galeri Tamu</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li class="current">Galeri Tamu</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
 
     @if(session('success'))
         <div class="alert alert-success">
@@ -84,46 +59,79 @@
         </div>
     @endif
 
-    <div class="container-fluid service pb-5">
+    <!-- Service Start -->
+    <div class="content d-flex flex-column flex-column-fluid">
+        <div class="container-fluid service pb-5">
             <div class="container pb-5">
-                <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
-                    <h4 class="text-primary">Our Services</h4>
-                    <h1 class="display-5 mb-4">We Services provided best offer</h1>
-                    <p class="mb-0">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tenetur adipisci facilis cupiditate recusandae aperiam temporibus corporis itaque quis facere, numquam, ad culpa deserunt sint dolorem autem obcaecati, ipsam mollitia hic.
-                    </p>
+                <div class="text-center service-header wow fadeInUp" data-wow-delay="0.2s">
+                <h6 class="section-title bg-white text-center text-primary px-3">Galeri Tamu</h6>
+                    <h1 class="display-5 mb-3" style="font-size: 1.2rem; color: gray;">Daftar Tamu yang datang berkunjung</h1>
                 </div>
-                <div class="row g-4">
-                @foreach($tamu as $item)
-                    <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.2s">
-                        <div class="service-item">
-                            <div class="service-img">
-                                <img src="{{ asset('storage/' . $item->webcamImage) }}" class="img-fluid rounded-top w-100" alt="Image of {{ $item->nama }}">
+
+                <div class="row">
+                    @foreach($tamu as $item)
+                        <div class="col-lg-4 col-sm-6 my-3">
+                            <div class="card rounded-card h-100">
+                                <div class="card-body p-0">
+                                    <div class="service-img">
+                                        <img src="{{ asset('storage/' . $item->webcamImage) }}" class="img-fluid card-img" alt="{{ $item->keperluan }}">
+                                    </div>
+                                    <div class="text-gray-800 p-3">
+                                        <small class="fw-bold fs-8 text-date">{{ $item->created_at->format('Y-m-d') }}</small>
+                                        <div class="fs-6 lh-base mt-1 substrTitle2Line text-wrap text-description">
+                                            {{ Str::words($item->keperluan, 25, '...') }}
+                                        </div>
+                                        <a href="{{ route('tamu_show', $item->id) }}">
+                                            <span class="text-primary fs-8 mt-0 pt-0">selengkapnya..</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="rounded-bottom p-4">
-                                
-                                <p class="mb-4">
-                                    <strong>Keperluan:</strong> {{ $item->keperluan }}
-                                </p>
-                                <td>
-                                <a href="{{ route('tamu_show', $item->id) }}" class="btn btn-read">Read More</a><td>
-                                <div class="d-flex gap-2">
-                                <form action="" method="POST" onsubmit="return confirm('Are you sure you want to delete this item?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-delete">Delete</button>
-                                </form>
-                                <a href="" class="btn btn-update">Update</a>
-                           </div>
-                         </div>
-                    </div>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
+                </div>
+                <div class="pagination">
+    <ul class="pagination">
+        @if ($tamu->onFirstPage())
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $tamu->previousPageUrl() }}">Previous</a>
+            </li>
+        @endif
+
+        @foreach ($tamu->getUrlRange(1, $tamu->lastPage()) as $number => $url)
+            @if ($number == $tamu->currentPage())
+                <li class="page-item active">
+                    <span class="page-link">{{ $number }}</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $url }}">{{ $number }}</a>
+                </li>
+            @endif
+        @endforeach
+
+        @if ($tamu->hasMorePages())
+            <li class="page-item">
+                <a class="page-link" href="{{ $tamu->nextPageUrl() }}">Next</a>
+            </li>
+        @else
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        @endif
+    </ul>
+            </div>
         </div>
     </div>
-    </div>
+    <!-- Service End -->
+    
 
+    
     @include('admin.footer')
 </body>
 </html>
-
-

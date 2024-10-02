@@ -135,7 +135,7 @@ public function upload(Request $request)
 {
    // Validate the request
    $validator = Validator::make($request->all(), [
-    'nama' => 'required|string|string|max:255',
+    'nama' => 'required|string|max:255',
     'alamat' => 'required|string',
     'opd_id' =>'required|exists:opds,id',
     'keperluan' => 'required|string|string|max:100000',
@@ -163,6 +163,7 @@ $tamu = new Tamu();
 $tamu->nama = $request->input('nama');
 $tamu->alamat = $request->input('alamat');
 $tamu->opd_id = $request->input('opd_id');
+$tamu->dinas = auth()->user()->id;
 $tamu->keperluan = $request->input('keperluan');
 $tamu->webcamImage = $imagePath;
 $tamu->save();
@@ -186,8 +187,11 @@ public function show_tamu()
     {
         $user = auth()->user();
 
-        $tamu = Tamu::where('opd_id', $user->opd_id)->get();
+        $userOpdId = $user->opd_id;
 
+        $tamu = Tamu::where('opd_id', $userOpdId)
+                ->orWhere('dinas', $user->id) // Assuming 'created_by' is the field storing who created the entry
+                ->get();
         $opd = Opd::all() ?? [];
 
         Log::info('Tamu data retrieved', ['count' => $tamu->count(), 'data' => $tamu]);

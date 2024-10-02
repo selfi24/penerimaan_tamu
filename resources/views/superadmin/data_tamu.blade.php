@@ -196,7 +196,7 @@
                     </div>
                     <div class="col-12">
     <div class="form-group">
-        <label class="form-control-label" for="opd_id">Asal Dinas<span class="small text-danger">*</span></label>
+        <label class="form-control-label" for="opd_id">Tujuan Dinas<span class="small text-danger">*</span></label>
         <select class="form-control" name="opd_id" id="edit-opd" placeholder="Pilih Dinas" required>
             <option value="" disabled selected>Pilih Dinas</option>
             @foreach($opd as $opd)
@@ -231,6 +231,7 @@
             </form>
         </div>
     </div>
+    
     <!-- Form End -->
     
 @include('superadmin.footer')    

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama')->nullable();
             $table->string('alamat')->nullable();
             $table->foreignId('opd_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('dinas')->nullable(); // Make this nullable
             $table->string('keperluan')->nullable();
             $table->string('webcamImage')->nullable();
             $table->timestamps();

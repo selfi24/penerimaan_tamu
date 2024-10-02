@@ -243,20 +243,18 @@
                                     </div>
 
                                     <div class="col-lg-12">
-                                        
                                     <div class="form-group">
-        <label class="form-control-label" for="opd_id">Asal Dinas<span class="small text-danger">*</span></label>
+        <label class="form-control-label" for="opd_id">Tujuan Dinas<span class="small text-danger">*</span></label>
         <select class="form-control" name="opd_id" id="edit-opd" placeholder="Pilih Dinas" required>
             <option value="" disabled selected>Pilih Dinas</option>
-            @foreach($opd as $item)
-                <option value="{{ $item->id }}">
-                    {{ $item->dinas }}
+            @foreach($opd as $opd)
+                <option value="{{ $opd->id }}">
+                    {{ $opd->dinas }}
                 </option>
             @endforeach
         </select>
     </div>
-                                    </div>
-
+</div>
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label class="form-control-label" for="keperluan">Keperluan<span class="small text-danger">*</span></label>

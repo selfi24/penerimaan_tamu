@@ -336,8 +336,9 @@ select.form-control {
                                 <thead>
                                     <tr>
                                         <th>Nama</th>
-                                        <th>Asal Dinas</th>
+                                        <th>Tujuan Dinas</th>
                                         <th>Alamat</th>
+                                        <th>Tanggal</th>
                                         <th>Keperluan</th>
                                         <th>Actions</th>
                                     </tr>
@@ -349,6 +350,7 @@ select.form-control {
                                             <td>{{ $item->nama }}</td>
                                             <td>{{ $item->opd->dinas }}</td>
                                             <td>{{ $item->alamat }}</td>
+                                            <td>{{ $item->created_at->format('d-m-Y') }}</td>
                                             <td>
                                                 <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" onclick="openModal({{ json_encode($item->keperluan) }})" aria-label="View details">
                                                     <i class="fas fa-eye" style="font-size: 24px; color: black;"></i>

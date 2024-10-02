@@ -12,26 +12,29 @@ use App\Models\User;
 
 use App\Models\Tamu;
 
+use App\Models\Opd;
+
+use Illuminate\Support\Str;
+
+use Illuminate\Http\JsonResponse;
+
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
-{
-
-    
-    
-    
+{   
     public function index()
 {
-   
+    $tamu = Tamu::latest()->take(4)->get();
+    
     if (Auth::check()) {
 
         $user = Auth::user(); 
 
         if ($user->usertype == 'user') {
 
-            return view('admin.home');
+            return view('admin.home', compact('tamu'));
 
         } else if ($user->usertype == 'admin') {
 
@@ -42,12 +45,10 @@ class HomeController extends Controller
             return view('superadmin.index');
 
         }
-    } else {
-       
-        return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
-    }
-}
+    } 
 
+    return view('admin.home', compact('tamu'));
+}
 
     public function page()
     {
@@ -61,69 +62,25 @@ class HomeController extends Controller
     
     public function tamu()
     {
-        return view('admin.tamu');
-    }
 
-    public function show_profil()
-    {
-        $user = User::all();
-
-        return view('admin.profil',compact('user'));
-
-    }
-
-    public function profil_delete($id)
-    {
-        $data = User::find($id);
-
-        $user->delete();
-
-        return redirect()->back()->with('message','Profil Berhasil Dihapus');
-
-    }
-
-    public function edit_profil($id)
-    {
-        $user = User::find($id);
-        return view('admin.edit_profile', compact('user'));
-   
-    }
-
-    public function update_profil(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'whatsapp' => 'required|string|max:255',
-            'dinas' => 'required|string|max:255',
-            'opd' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'password' => 'nullable|string|min:8|confirmed',
-        ]);
-
-        $user = User::find($id);
-        $user->update($validated);
-
-        
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        $user->save();
-
-        return redirect()->route('edit_profil', $id)->with('message', 'Profil berhasil diperbarui!');
+        $user = auth()->user();
+    
+        $opd = Opd::all();
+    
+        return view('admin.entry_tamu', compact('opd'));
     }
 
     public function uploadss(Request $request)
 {
     // Validate the request
     $validator = Validator::make($request->all(), [
-        'nama' => 'required|string',
-        'alamat' => 'required|string',
-        'asal' => 'required|string',
-        'keperluan' => 'required|string',
-        'webcamImage' => 'nullable|string',
-    ]);
+    'nama' => 'required|string|max:255',
+    'alamat' => 'required|string',
+    'dinas' => 'nullable|string',
+    'opd_id' =>'required|exists:opds,id',
+    'keperluan' => 'required|string|string|max:100000',
+    'webcamImage' => 'nullable|string',
+]);
 
     if ($validator->fails()) {
         return response()->json(['errors' => $validator->errors()], 422);
@@ -145,26 +102,20 @@ class HomeController extends Controller
     $tamu = new Tamu();
     $tamu->nama = $request->input('nama');
     $tamu->alamat = $request->input('alamat');
-    $tamu->asal = $request->input('asal');
+    $tamu->dinas = $request->input('dinas');
+    $tamu->opd_id = $request->input('opd_id');
     $tamu->keperluan = $request->input('keperluan');
     $tamu->webcamImage = $imagePath;
     $tamu->save();
 
-    return redirect()->route('tamu')->with('success', 'Data berhasil dikirim');
+    return redirect()->route('entry_tamu')->with('success', 'Data berhasil dikirim');
 }
 
 public function buku_tamu()
     {
-        $tamu = Tamu::all();
+        $tamu = Tamu::paginate(6);
 
         return view('admin.buku_tamu',compact('tamu'));
-    }
-
-    public function buku_tamu2()
-    {
-        $tamu = Tamu::all();
-
-        return view('admin.buku_tamu2',compact('tamu'));
     }
 
     public function show($id)
@@ -221,6 +172,22 @@ public function buku_tamu()
 
         // Redirect or return a response
         return redirect()->route('buku_tamu')->with('success', 'Entry deleted successfully.');
+    }
+
+    public function jadwal()
+    {
+        return view('admin.jadwal');
+    }
+
+    public function getCalendarData($year, $month)
+    {
+        // Ambil data tamu berdasarkan tahun dan bulan
+        $tamu = Tamu::whereYear('created_at', $year)
+                     ->whereMonth('created_at', $month + 1) // PHP bulan mulai dari 1
+                     ->with('opd')
+                     ->get();
+
+        return response()->json($tamu);
     }
 }
 

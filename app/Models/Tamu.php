@@ -11,13 +11,14 @@ class Tamu extends Model
     
     public function opd()
     {
-        return $this->belongsTo(Opd::class);
+        return $this->belongsTo(Opd::class, 'opd_id');
     }
 
 
     protected $fillable = [
         'nama',
         'alamat',
+        'dinas',
         'opd_id',
         'keperluan',
         'webcamImage',

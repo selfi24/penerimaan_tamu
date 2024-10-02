@@ -137,7 +137,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-    <a href="/" class="navbar-brand d-flex align-items-center px-2 px-lg-5">
+    <a href="/home" class="navbar-brand d-flex align-items-center px-2 px-lg-5">
     <img src="img/logo.png" alt="" style="width: 100px; height: auto;;">
         <h2 class="m-0 text-primary ms-0">DISKOMINFO</h2>
     </a>

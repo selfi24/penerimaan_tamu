@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('usertype')->default('user');
             $table->string('whatsapp')->nullable();
-            $table->foreignId('opd_id')->nullable()->constrained(opds)->onDelete('cascade');
+            $table->foreignId('opd_id')->nullable()->constrained('opds')->onDelete('cascade');
             $table->string('alamat')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

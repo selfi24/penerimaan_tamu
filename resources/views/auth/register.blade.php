@@ -12,7 +12,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 
-  <style>
+    <style>
         body {
             color: #000;
             overflow-x: hidden;
@@ -31,14 +31,15 @@
         }
         
         .welcome-message {
-            font-size:34px; /* Larger font size */
-            font-weight: bold;
-            font-family: 'Arial Black', Arial, sans-serif;
-            color: #3366FF; /* Example color: Deep Orange */
-            text-align: center;
-            margin-bottom: 40px;
-            margin-top: 80px;   
-        }
+    font-size: 34px; /* Larger font size */
+    font-weight: bold;
+    font-family: 'Arial Black', Arial, sans-serif;
+    color: #3366FF; /* Example color: Deep Orange */
+    text-align: center;
+    margin-bottom: 20px; /* Space below the message */
+    margin-top: 60px; /* Adjust this value to move the message down */
+}
+
         .image {
              width: 650px;
              height: auto px;
@@ -133,24 +134,13 @@
                 margin: 0px 15px;
             }
         }
-    </style>
 
-<script>
-        function refreshCaptcha() {
-            var captchaImage = document.getElementById('captcha-image');
-            captchaImage.src = '{{ captcha_src() }}?' + new Date().getTime();
-        }
-        $(document).ready(function() {
-            @if ($errors->has('captcha'))
-                $('#captcha-error').text('{{ $errors->first('captcha') }}').show();
-            @endif
-        });
-    </script>
+    </style>
 
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-    <a href="/" class="navbar-brand d-flex align-items-center px-2 px-lg-5">
+    <a href="/home" class="navbar-brand d-flex align-items-center px-2 px-lg-5">
     <img src="img/logo.png" alt="" style="width: 100px; height: auto;;">
         <h2 class="m-0 text-primary ms-0">DISKOMINFO</h2>
     </a>
@@ -173,7 +163,7 @@
                             <div class="row px-3 justify-content-center mt-4 mb-5 border-line">
                             <div class="welcome-message">Don't have an account ?</div>
                            
-                                <img src="img/regi.png" alt="Logo" class="image">
+                                <img src="img/register.jpg" alt="Register" class="image">
                             </div>
                         </div>
                     </div>
@@ -250,6 +240,17 @@
             let value = e.target.value;
             // Remove non-numeric characters
             e.target.value = value.replace(/\D/g, '');
+        });
+    </script>
+    <script>
+        function refreshCaptcha() {
+            var captchaImage = document.getElementById('captcha-image');
+            captchaImage.src = '{{ captcha_src() }}?' + new Date().getTime();
+        }
+        $(document).ready(function() {
+            @if ($errors->has('captcha'))
+                $('#captcha-error').text('{{ $errors->first('captcha') }}').show();
+            @endif
         });
     </script>
 </body>

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Tamu;
+
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
@@ -11,7 +13,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CaptchaController;
 
 Route::get('/', function () {
-    return view('admin.home');
+
+    $tamu = Tamu::latest()->take(4)->get();
+    return view('admin.home', compact('tamu'));
 });
 
 Route::middleware([
@@ -33,9 +37,9 @@ Route::get('refreshcaptcha', [CaptchaController::class, 'refreshCaptcha'])->name
 route::get('/home', [HomeController::class,'index'])->name('home');
 route::get('/adminpage', [HomeController::class,'page'])->middleware('auth','admin');
 route::get('/contact', [HomeController::class,'contact'])->name('contact');
+route::get('/jadwal', [HomeController::class,'jadwal'])->name('jadwal');
+route::get('/get-calendar-data/{year}/{month}', [HomeController::class, 'getCalendarData']);
 
-
-route::get('/tamu', [HomeController::class,'tamu'])->name('tamu');
 route::get('/show_profil', [HomeController::class,'show_profil'])->name('show_profil');
 route::get('profil_delete/{id}',[HomeController::class,'profil_delete']);
 route::get('edit_profil/{id}', [HomeController::class, 'edit_profil'])->name('edit_profil');
@@ -45,7 +49,9 @@ Route::get('/webcam', function () {
 });
 
 
-Route::post('/submit', [HomeController::class, 'uploadss']);
+route::get('/entry_tamu', [HomeController::class,'tamu'])->name('entry_tamu');
+Route::post('/submit-form1', [HomeController::class, 'uploadss']);
+
 route::get('/buku_tamu', [HomeController::class,'buku_tamu'])->name('buku_tamu');
 route::get('/buku_tamu2', [HomeController::class,'buku_tamu2'])->name('buku_tamu2');
 Route::get('/tamu/{id}', [HomeController::class, 'show'])->name('tamu_show');

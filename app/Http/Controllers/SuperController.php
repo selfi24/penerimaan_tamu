@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\DB;
+
 use App\Models\User;
 
 use App\Models\Tamu;
@@ -34,6 +36,26 @@ class SuperController extends Controller
 
         $user = Tamu::all()->count();
 
+        $tamuCounts = Tamu::select('opd_id', DB::raw('count(*) as count'))
+        ->groupBy('opd_id')
+        ->get();
+
+    $totalAgencies = [];
+    $labels = [];
+    $counts = [];
+    $chartColors = [];
+
+    foreach ($tamuCounts as $item) {
+        $opd = Opd::find($item->opd_id); // Fetch the Dinas name
+        if ($opd) {
+            $labels[] = $opd->dinas; // Get Dinas name
+            $counts[] = $item->count; // Get count
+            // Generate a random color for each Dinas
+            $chartColors[] = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+            $totalAgencies[$opd->dinas] = $item->count; // For displaying in the legend
+        }
+    }
+
         $usertype = Auth()->user()->usertype;
 
         if($usertype == 'superadmin')
@@ -45,7 +67,7 @@ class SuperController extends Controller
 
         $tamu = Tamu::all()->count();
 
-        return view('superadmin.index',compact('user','admin','users','opd','tamu'));
+        return view('superadmin.index',compact('user','admin','users','opd','tamu','labels', 'counts', 'chartColors', 'totalAgencies' ));
 
         }
         else if($usertype == 'user')
@@ -55,6 +77,15 @@ class SuperController extends Controller
                return view('admin.home');
 
             } 
+        }
+
+        private function generateRandomColor()
+        {
+            // Generate random RGB values
+            $r = rand(0, 255);
+            $g = rand(0, 255);
+            $b = rand(0, 255);
+            return "rgba($r, $g, $b, 0.6)"; // Return an RGBA color with 60% opacity
         }
 
         public function show_profil()

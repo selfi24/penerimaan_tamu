@@ -198,7 +198,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="opd_id">Asal Dinas</label>
+                                        <label for="opd_id">Tujuan Dinas</label>
                                         <select id="opd_id" name="opd_id" class="form-control">
                                             <option value="" disabled>Select Dinas</option>
                                             @foreach($opd as $item)
