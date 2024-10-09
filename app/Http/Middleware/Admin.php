@@ -20,11 +20,11 @@ class Admin
             $user = Auth::user();
 
             if ($user->usertype == 'user') {
-                return redirect()->route('user.home');
+                return redirect()->route('home');
             } else if ($user->usertype == 'admin') {
-                return redirect()->route('admin.home');
+                return redirect()->route('index');
             } else if ($user->usertype == 'superadmin') {
-                return redirect()->route('superadmin.home');
+                return redirect()->route('superadmin.index');
             } else {
                 // Optional: Handle unknown user types
                 return redirect()->route('login')->with('error', 'Unknown user type.');

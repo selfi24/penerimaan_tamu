@@ -198,15 +198,8 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="opd_id">Tujuan Dinas</label>
-                                        <select id="opd_id" name="opd_id" class="form-control">
-                                            <option value="" disabled>Select Dinas</option>
-                                            @foreach($opd as $item)
-                                                <option value="{{ $item->id }}" {{ old('opd_id', $tamu->opd_id) == $item->id ? 'selected' : '' }}>
-                                                    {{ $item->dinas }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <label for="alamat">Asal Dinas</label>
+                                        <input type="text" name="dinas" id="dinas" class="form-control" value="{{ old('dinas', $tamu->dinas) }}">
                                     </div>
 
                                     <div class="form-group">

@@ -198,29 +198,41 @@
                 </tbody>
             </table>
 
-            <!-- Pagination Links -->
             <div class="pagination">
-                <ul class="pagination">
-                    @foreach ($opds->links()->elements as $element)
-                        @if (is_array($element))
-                            @foreach ($element as $number => $link)
-                                @if ($number == $opds->currentPage())
-                                    <li class="page-item active">
-                                        <span class="page-link">{{ $number }}</span>
-                                    </li>
-                                @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $link }}">{{ $number }}</a>
-                                    </li>
-                                @endif
-                            @endforeach
-                        @endif
-                    @endforeach
-                </ul>
-            </div>
+    <ul class="pagination">
+        @if ($opds->onFirstPage())
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $opds->previousPageUrl() }}">Previous</a>
+            </li>
+        @endif
 
-        </div>
-    </div>
+        @foreach ($opds->getUrlRange(1, $opds->lastPage()) as $number => $url)
+            @if ($number == $opds->currentPage())
+                <li class="page-item active">
+                    <span class="page-link">{{ $number }}</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $url }}">{{ $number }}</a>
+                </li>
+            @endif
+        @endforeach
+
+        @if ($opds->hasMorePages())
+            <li class="page-item">
+                <a class="page-link" href="{{ $opds->nextPageUrl() }}">Next</a>
+            </li>
+        @else
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        @endif
+    </ul>
+            </div>
 
     @include('superadmin.footer')
 

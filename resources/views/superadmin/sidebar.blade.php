@@ -111,12 +111,12 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+            <a class="nav-link" data-toggle="collapse" href="#menu-management" aria-expanded="false" aria-controls="ui-basic">
               <i class="icon-head menu-icon"></i>
               <span class="menu-title">Management</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="ui-basic">
+            <div class="collapse" id="menu-management">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="{{ route('opd') }}">Dinas</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{ route('user') }}">Admin</a></li>

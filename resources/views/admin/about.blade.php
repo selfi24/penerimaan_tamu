@@ -38,12 +38,7 @@
                         </div>
                     @endforeach
 
-                <!-- Load more button -->
-                <div class="col-lg-12 col-sm-12 text-center my-10">
-                    <a href="{{ route('buku_tamu') }}" class="btn btn-lg btn-primary rounded-pill">
-                        <span class="fw-bolder text-white">Lihat lainnya</span>
-                    </a>
-                </div>
+                
             </div>
         </div>
     </div>

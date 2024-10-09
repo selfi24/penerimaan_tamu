@@ -72,6 +72,8 @@ class HomeController extends Controller
 
     public function uploadss(Request $request)
 {
+    
+    $user = auth()->user();
     // Validate the request
     $validator = Validator::make($request->all(), [
     'nama' => 'required|string|max:255',

@@ -305,6 +305,7 @@ textarea.form-control {
                                 <thead>
                                     <tr>
                                         <th>Nama</th>
+                                        <th>Asal Dinas</th>
                                         <th>Tujuan Dinas</th>
                                         <th>Alamat</th>
                                         <th>Tanggal</th>
@@ -317,6 +318,7 @@ textarea.form-control {
                                     @foreach($tamu as $item)
                                         <tr>
                                             <td>{{ $item->nama }}</td>
+                                            <td>{{ $item->dinas }}</td>
                                             <td>{{ $item->opd->dinas }}</td>
                                             <td>{{ $item->alamat }}</td>
                                             <td>{{ $item->created_at->format('d-m-Y') }}</td>
@@ -353,30 +355,41 @@ textarea.form-control {
                         </div>
                     </div>
 
-                     <!-- Pagination Links -->
-    <div class="pagination">
-                <ul class="pagination">
-                    @foreach ($tamu->links()->elements as $element)
-                        @if (is_array($element))
-                            @foreach ($element as $number => $link)
-                                @if ($number == $tamu->currentPage())
-                                    <li class="page-item active">
-                                        <span class="page-link">{{ $number }}</span>
-                                    </li>
-                                @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $link }}">{{ $number }}</a>
-                                    </li>
-                                @endif
-                            @endforeach
-                        @endif
-                    @endforeach
-                </ul>
+                    <div class="pagination">
+    <ul class="pagination">
+        @if ($tamu->onFirstPage())
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $tamu->previousPageUrl() }}">Previous</a>
+            </li>
+        @endif
+
+        @foreach ($tamu->getUrlRange(1, $tamu->lastPage()) as $number => $url)
+            @if ($number == $tamu->currentPage())
+                <li class="page-item active">
+                    <span class="page-link">{{ $number }}</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $url }}">{{ $number }}</a>
+                </li>
+            @endif
+        @endforeach
+
+        @if ($tamu->hasMorePages())
+            <li class="page-item">
+                <a class="page-link" href="{{ $tamu->nextPageUrl() }}">Next</a>
+            </li>
+        @else
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        @endif
+    </ul>
             </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     
     
@@ -396,7 +409,7 @@ textarea.form-control {
         <span class="close" onclick="closeEditModal()">&times;</span>
         <div id="modal-body">
             <!-- Form content here -->
-            <form id="editForm" action="{{ route('update_tamu', $item->id) }}" method="POST">
+            <form id="editForm" action="" method="POST">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" id="edit-id">

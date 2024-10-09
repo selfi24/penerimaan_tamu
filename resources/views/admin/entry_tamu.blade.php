@@ -149,14 +149,12 @@
                     <h6 class="m-0 font-weight-bold text-primary">Add Account</h6>
                 </div>
                 <div class="card-body">
-                    @if (session('success'))
-                        <div class="alert alert-success border-left-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    @endif
+                @if (session('success'))
+    <div class="alert alert-success" role="alert">
+        {{ session('success') }}
+    </div>
+@endif
+
 
                     @if ($errors->any())
                         <div class="alert alert-danger border-left-danger" role="alert">

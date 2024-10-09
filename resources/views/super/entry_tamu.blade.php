@@ -242,19 +242,23 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-12">
-                                    <div class="form-group">
-        <label class="form-control-label" for="opd_id">Tujuan Dinas<span class="small text-danger">*</span></label>
-        <select class="form-control" name="opd_id" id="edit-opd" placeholder="Pilih Dinas" required>
-            <option value="" disabled selected>Pilih Dinas</option>
-            @foreach($opd as $opd)
-                <option value="{{ $opd->id }}">
-                    {{ $opd->dinas }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="dinas">Asal Dinas<span class> (Opsional)</span></label>
+                                            <input type="text" id="dinas" class="form-control" name="dinas" placeholder="Dinas Komunikasi" value="{{ old('dinas') }}">
+                                        </div>
+                                    </div>
+
+<div class="col-lg-6">
+    <div class="form-group">
+        <label class="form-control-label" for="opd_address">Tujuan Dinas<span class="small text-danger">*</span></label>
+        <input type="text" id="opd_address" class="form-control" name="opd_address" 
+               value="{{ $authUser->opd_id ? $opd->find($authUser->opd_id)->dinas : '' }}" 
+               readonly required>
+          </div>
+    <input type="hidden" name="opd_id" value="{{ $authUser->opd_id }}">
 </div>
+
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label class="form-control-label" for="keperluan">Keperluan<span class="small text-danger">*</span></label>

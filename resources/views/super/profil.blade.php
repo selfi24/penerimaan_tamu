@@ -37,19 +37,6 @@
     outline-width: 0;
 }
 
-/* Button Styles */
-.btn-primary {
-    background-color: #3399ff;
-    color: #fff;
-    border-radius: 2px;
-    width: 150px;
-}
-
-.btn-primary:hover {
-    background-color: #000;
-    cursor: pointer;
-}
-
 /* Alerts */
 .alert {
     border-radius: 0;
@@ -203,14 +190,20 @@
                             </div>
 
                             <!-- Save Button -->
-                            <div class="pl-lg-4">
-                                <div class="row">
-                                    <div class="col text-center">
-                                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                                    </div>
-                                </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" style="border-radius: 10px;">Simpan profil</button>
                             </div>
                         </form>
+                                        <!-- Delete Profile Form -->
+                                         
+                         <form action="{{ route('profile.destroy') }}" method="POST" style="margin-top: 20px;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-danger" style="border-radius: 10px;" onclick="confirmation(event)">Hapus profil</button>
+                         </form>
+                                        
+                        
+                         
                     </div>
                 </div>
             </div>

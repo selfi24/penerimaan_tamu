@@ -161,7 +161,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('admin_new', $user->id) }}" method="POST">
+                        <form action="{{ route('up_user', $user->id) }}" method="POST">
                             @csrf
                             <fieldset>
                                 <legend>Account Information</legend>
@@ -242,7 +242,7 @@
                                 <div class="row">
                                     <div class="col text-center button-container">
                                         <button type="submit" class="btn btn-primary">Edit User</button>
-                                        <a href="{{ route('user') }}" class="btn btn-danger">Close</a>
+                                        <a href="{{ route('pengguna') }}" class="btn btn-danger">Close</a>
                                     </div>
                                 </div>
                             </div>

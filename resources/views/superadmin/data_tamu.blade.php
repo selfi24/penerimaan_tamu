@@ -194,6 +194,12 @@
                             <input type="text" class="form-control" id="alamat" name="alamat" required> 
                         </div>
                     </div>
+                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="dinas">Asal Dinas<span class> (Opsional)</span></label>
+                                            <input type="text" id="dinas" class="form-control" name="dinas" placeholder="Dinas Komunikasi" value="{{ old('dinas') }}">
+                                        </div>
+                                    </div>
                     <div class="col-12">
     <div class="form-group">
         <label class="form-control-label" for="opd_id">Tujuan Dinas<span class="small text-danger">*</span></label>

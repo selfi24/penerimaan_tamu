@@ -1,11 +1,11 @@
 <script>
-    // Fungsi untuk format tanggal dalam format 'dd MMM yyyy'
+    // Date formatting function
     function formatDate(date) {
         const options = { day: '2-digit', month: 'short', year: 'numeric' };
         return date.toLocaleDateString('en-US', options);
     }
 
-    // Fungsi untuk mengupdate teks tanggal di button
+    // Function to update date on button
     function updateDate() {
         const now = new Date();
         const formattedDate = formatDate(now);
@@ -13,102 +13,129 @@
         dateElement.textContent = `Today (${formattedDate})`;
     }
 
-    // Jalankan updateDate saat halaman dimuat
+    // Run updateDate when the page loads
     document.addEventListener('DOMContentLoaded', updateDate);
 </script>
 
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
+    <div class="content-wrapper">
+        <div class="row">
             <div class="col-md-12 grid-margin">
-              <div class="row">
-                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                  <h3 class="font-weight-bold">Selamat Datang di Website Penerimaan Tamu</h3>
-                  </div>
-                <div class="col-12 col-xl-4">
-                 <div class="justify-content-end d-flex">
-                 <div class="btn btn-sm btn-light bg-white" id="currentDateButton">
-            <i class="mdi mdi-calendar"></i> <span id="currentDate">Today</span>
+                <div class="row">
+                    <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                        <h3 class="font-weight-bold">Selamat Datang <span style="color: #700c96;">{{ Auth::user()->name }}</span> di Website Penerimaan Tamu</h3>
+                    </div>
+                    <div class="col-12 col-xl-4">
+                        <div class="justify-content-end d-flex">
+                            <div class="btn btn-sm btn-light bg-white" id="currentDateButton">
+                                <i class="mdi mdi-calendar"></i> <span id="currentDate">Today</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-                 </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 grid-margin stretch-card">
-              <div class="card tale-bg">
-                <div class="card-people mt-auto">
-                  <img src="{{asset('super/images/dashboard/people.svg')}}" alt="people">
-                  
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 grid-margin transparent">
-              <div class="row">
-                <div class="col-md-6 mb-4 stretch-card transparent">
-                  <div class="card card-tale">
-                    <div class="card-body">
-                      <p class="mb-4">Total Pengguna</p>
-                      <p class="fs-30 mb-2"></p>
+        <div class="row">
+            <div class="col-md-12 grid-margin transparent">
+                <div class="row">
+                    <div class="col-md-12 mb-4 stretch-card transparent">
+                        <div class="card card-light-blue">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <p class="mb-0">Total Entry Tamu</p>
+                                <i class="fas fa-chart-pie fa-3x text-white"></i>
+                            </div>
+                            <p class="fs-30 mb-4" style="margin-left: 30px;">{{ $tamu }}</p>
+                        </div>
                     </div>
-                  </div>
                 </div>
-                <div class="col-md-6 mb-4 stretch-card transparent">
-                  <div class="card card-dark-blue">
-                    <div class="card-body">
-                      <p class="mb-4">Total OPD</p>
-                      <p class="fs-30 mb-2"></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6 mb-4 stretch-card transparent">
-                  <div class="card card-light-blue">
-                    <div class="card-body">
-                      <p class="mb-4">Total Entry Tamu</p>
-                      <p class="fs-30 mb-2"></p>
-                    </div>
-                  </div>
-                </div>
-                
-              </div>
             </div>
-          </div>
-           <div class="row">
+        </div>
+
+        <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <p class="card-title">Advanced Table</p>
-                  <div class="row">
-                    <div class="col-12">
-                      <div class="table-responsive">
-                        <table id="example" class="display expandable-table" style="width:100%">
-                          <thead>
-                            <tr>
-                              <th>Quote#</th>
-                              <th>Product</th>
-                              <th>Business type</th>
-                              <th>Policy holder</th>
-                              <th>Premium</th>
-                              <th>Status</th>
-                              <th>Updated at</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                      </table>
-                      </div>
-                    </div>
-                  </div>
-                  </div>
-                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Data tamu per bulan pada {{ $selectedOpd }}</h4>
+                        <label for="yearSelect">Pilih Tahun:</label>
+                        <select id="yearSelect" onchange="updateChart()">
+                            @foreach ($years as $yearOption)
+                                <option value="{{ $yearOption }}" {{ $yearOption == $year ? 'selected' : '' }}>{{ $yearOption }}</option>
+                            @endforeach
+                        </select>
 
-                
-              </div>
+                        <canvas id="guestChart" width="350" height="150"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+</div>
 
-         
+<script>
+    let totals = @json($totals);
+    let months = @json($months);
+
+    function updateChart() {
+    const selectedYear = document.getElementById('yearSelect').value;
+
+    // Fetch new data based on the selected year
+    fetch(`/api/guest-data?year=${selectedYear}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update totals and months from response
+            totals = data.totals;
+            months = data.months;
+
+            // Redraw the chart with new data
+            drawChart();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+
+function drawChart() {
+    const ctx = document.getElementById('guestChart').getContext('2d');
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Hapus grafik sebelumnya
+
+    const guestChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Jumlah tamu',
+                data: totals,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Jumlah tamu'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        
+                    }
+                }
+            }
+        }
+    });
+}
+
+    // Initialize the chart
+    drawChart();
+</script>
+

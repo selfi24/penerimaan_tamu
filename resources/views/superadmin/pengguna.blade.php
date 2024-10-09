@@ -335,7 +335,7 @@ textarea.form-control {
                                 <td>{{ $user->whatsapp }}</td>
                                 <td>{{ $user->alamat }}</td>
                                 <td>
-                                <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" aria-label="Edit" onclick="editUser({{ json_encode($user) }})">
+                                <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" aria-label="Edit" href="{{ route('edit_user', $user->id) }}">
     <i class="fas fa-edit" style="font-size: 24px; color: blue;"></i>
 </a>
 
@@ -360,27 +360,41 @@ textarea.form-control {
                             </table>
                         </div>
                     </div>
-
-<!-- Pagination Links -->
-<div class="pagination">
+                    <div class="pagination">
     <ul class="pagination">
-        @foreach ($users->links()->elements as $element)
-            @if (is_array($element))
-                @foreach ($element as $number => $link)
-                    @if ($number == $users->currentPage())
-                        <li class="page-item active">
-                            <span class="page-link">{{ $number }}</span>
-                        </li>
-                    @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $link }}">{{ $number }}</a>
-                        </li>
-                    @endif
-                @endforeach
+        @if ($users->onFirstPage())
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $users->previousPageUrl() }}">Previous</a>
+            </li>
+        @endif
+
+        @foreach ($users->getUrlRange(1, $users->lastPage()) as $number => $url)
+            @if ($number == $users->currentPage())
+                <li class="page-item active">
+                    <span class="page-link">{{ $number }}</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $url }}">{{ $number }}</a>
+                </li>
             @endif
         @endforeach
+
+        @if ($users->hasMorePages())
+            <li class="page-item">
+                <a class="page-link" href="{{ $users->nextPageUrl() }}">Next</a>
+            </li>
+        @else
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        @endif
     </ul>
-</div>
+            </div>
 
                 </div>
             </div>
@@ -395,7 +409,7 @@ textarea.form-control {
             </button>
         </div>
         <div class="modal-body">
-            <form id="editForm" method="POST" action="{{ route('user.upp', $user->id) }}">
+            <form id="editForm" method="POST" action="">
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="modalId" name="id">
@@ -426,7 +440,7 @@ textarea.form-control {
                 </div>
                 <div class="form-group">
                     <label for="modalOpd">Asal Dinas</label>
-                    <select id="modalOpd" name="opd" class="form-control" required>
+                    <select id="modalOpd" name="opd" class="form-control" >
                         <option value="" disabled selected>Select Dinas</option>
                         @foreach($opd as $item)
                             <option value="{{ $item->id }}" {{ old('opd_id', $user->opd_id) == $item->id ? 'selected' : '' }}>
@@ -436,6 +450,20 @@ textarea.form-control {
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="current_password" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="new_password" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirm_password" class="form-control">
+                </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Update</button>
@@ -461,6 +489,16 @@ function editUser(user) {
         });
     // Set the form action URL
     document.getElementById('editForm').action = `/users/${user.id}`;
+
+    document.getElementById('editForm').addEventListener('submit', function (event) {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        alert("New password and confirmation do not match.");
+        event.preventDefault();
+    }
+});
 
     // Show the modal
     const modal = document.getElementById('editModal');

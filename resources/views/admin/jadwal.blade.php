@@ -216,9 +216,8 @@
     function handleGuestClick(opdId, dinas) {
     Swal.fire({
         title: 'Informasi Tamu',
-        html: `<strong>Asal Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${opdId}</span>
-            <strong>Tujuan Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${dinas}
-        `,
+        html: `<strong>Asal Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${dinas}</span>
+            <strong>Tujuan Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${opdId}</span>`,
         confirmButtonText: 'OK'
     });
     

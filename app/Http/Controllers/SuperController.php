@@ -291,7 +291,7 @@ class SuperController extends Controller
     }
     $user->save();
 
-    return redirect()->route('/user')->with('success', 'Profile updated successfully!');
+    return redirect()->back()->with('success', 'User berhasil ditambah!');
     }
 
 
@@ -352,7 +352,7 @@ class SuperController extends Controller
         $user = User::find($id);
         $user->delete();
 
-        return redirect()->back()->with('message', 'User deleted successfully.');
+        return redirect()->back()->with('message', 'User berhasil dihapus!');
     }
 
     public function add_pengguna()
@@ -378,8 +378,8 @@ class SuperController extends Controller
         'whatsapp' =>'nullable|string|regex:/^\d+$/|min:10|max:15',
         'alamat' => 'nullable|string|max:255',
         'opd_id' =>'nullable|exists:opds,id',
-        'new_password' => 'required|string|confirmed|min:8',
-    ]);
+        'current_password' => 'nullable|string|min:8',
+        'new_password' => 'nullable|string|min:8|confirmed',  ]);
 
     $usertype = !empty($request->opd) ? 'admin' : 'user';
 
@@ -391,12 +391,16 @@ class SuperController extends Controller
     $user->opd_id= $request->opd;
     $user->whatsapp = $request->whatsapp;
     $user->usertype = $usertype;
-    if ($request->new_password) {
-        $user->password = Hash::make($request->new_password);
+    if ($request->filled('new_password')) {
+        if (Hash::check($request->current_password, $user->password)) {
+            $user->password = Hash::make($request->new_password);
+        } else {
+            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+        }
     }
     $user->save();
 
-    return redirect()->back()->with('success', 'Profile updated successfully!');
+    return redirect()->back()->with('success', 'User berhasil dibuat!');
     }
 
 
@@ -406,6 +410,7 @@ class SuperController extends Controller
     $validator = Validator::make($request->all(), [
         'nama' => 'required|string|string|max:255',
         'alamat' => 'required|string',
+        'dinas' => 'nullable|string',
         'opd_id' =>'required|exists:opds,id',
         'keperluan' => 'required|string|string|max:1000',
         'webcamImage' => 'nullable|string',
@@ -431,12 +436,13 @@ class SuperController extends Controller
     $tamu = new Tamu();
     $tamu->nama = $request->input('nama');
     $tamu->alamat = $request->input('alamat');
+    $tamu->dinas = $request->input('dinas');
     $tamu->opd_id = $request->input('opd_id');
     $tamu->keperluan = $request->input('keperluan');
     $tamu->webcamImage = $imagePath;
     $tamu->save();
 
-    return redirect()->route('buka_tamu')->with('success', 'Data tamu berhasil dikirim');
+    return redirect()->route('buka_tamu')->with('success', 'Data tamu berhasil ditambah');
     }
 
     public function enter_tamu()
@@ -454,7 +460,7 @@ class SuperController extends Controller
     {
         $user = auth()->user();
 
-        $tamu = Tamu::paginate(7);
+        $tamu = Tamu::paginate(10);
 
         $opd = Opd::all() ?? [];
 
@@ -488,6 +494,7 @@ class SuperController extends Controller
     $validated = $request->validate([
         'nama' => 'required|string|max:255',
         'alamat' => 'required|string',
+        'dinas' => 'nullable|string',
         'opd_id' => 'required|exists:opds,id',
         'keperluan' => 'required|string|max:1000',
         'webcamImage' => 'nullable|file|image|max:2048',// For file upload
@@ -496,6 +503,7 @@ class SuperController extends Controller
     // Update Tamu record fields
     $tamu->nama = $request->input('nama');
     $tamu->alamat = $request->input('alamat');
+    $tamu->dinas = $request->input('dinas');
     $tamu->opd_id = $request->input('opd_id');
     $tamu->keperluan = $request->input('keperluan');
 
@@ -521,7 +529,7 @@ class SuperController extends Controller
     $tamu->save();
 
     // Redirect back with success message
-    return redirect()->back()->with('success', 'Data tamu berhasil diperbarui');
+    return redirect()->back()->with('success', 'Data tamu berhasil diperbarui!');
 }
 
     
@@ -534,7 +542,6 @@ class SuperController extends Controller
     return view('superadmin.tamu_update', compact('tamu', 'opd'));
     }
         
-
     public function admin($id)
     {
     $user = User::find($id);
@@ -544,20 +551,25 @@ class SuperController extends Controller
     return view('superadmin.edit_admin', compact('user', 'opd'));
     }
 
-    public function update_admin(Request $request, $id)
+    public function new_admin(Request $request, $id)
     {
-    $user = User::find($id);
+
     // Validate the request data
-    $validated = $request->validate([
+    $validatedData = $request->validate([
         'name' => 'required|string|max:255',
-        'username' => 'required|string|max:255|unique:users,username,' . $user->id,
-        'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
         'alamat' => 'required|string|max:255',
-        'whatsapp' => 'required|string|max:20',
+        'whatsapp' => 'required|regex:/^\d+$/',
         'opd_id' =>'nullable|exists:opds,id',
-        'current_password' => 'nullable|current_password',
-        'new_password' => 'nullable|min:8|confirmed',
+        'current_password' => 'nullable|string',
+        'new_password' => 'nullable|string|min:8|confirmed',
     ]);
+    $user = User::find($id);
+
+    if ($request->current_password && !Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+    }
 
     // Update user information
     $user->name = $request->input('name');
@@ -568,16 +580,58 @@ class SuperController extends Controller
     $user->opd_id = $request->input('opd');
 
     // Check if current password is provided and valid
-    if ($request->filled('current_password') && Hash::check($request->input('current_password'), $user->password)) {
-        // Update password if a new password is provided
-        if ($request->filled('new_password')) {
-            $user->password = Hash::make($request->input('new_password'));
+    if ($request->new_password) {
+            $user->password = Hash::make($validatedData['new_password']);
         }
-    }
 
     $user->save();
 
-    return redirect()->back()->with('success', 'Profile updated successfully!');
+    return redirect()->route('edit_admin', $user->id)->with('success', 'User berhasil diperbarui!');
     }
 
+    public function new_user($id)
+    {
+    $user = User::find($id);
+    
+    $opd = Opd::all();
+    
+    return view('superadmin.edit_user', compact('user', 'opd'));
+    }
+
+    public function up_user(Request $request, $id)
+    {
+    // Validate the request data
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'alamat' => 'required|string|max:255',
+        'whatsapp' => 'required|regex:/^\d+$/',
+        'opd_id' =>'nullable|exists:opds,id',
+        'current_password' => 'nullable|string',
+        'new_password' => 'nullable|string|min:8|confirmed',
+    ]);
+    $user = User::find($id);
+
+    if ($request->current_password && !Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+    }
+
+    // Update user information
+    $user->name = $request->input('name');
+    $user->username = $request->input('username');
+    $user->email = $request->input('email');
+    $user->alamat = $request->input('alamat');
+    $user->whatsapp = $request->input('whatsapp');
+    $user->opd_id = $request->input('opd');
+
+    // Check if current password is provided and valid
+    if ($request->new_password) {
+            $user->password = Hash::make($validatedData['new_password']);
+        }
+
+    $user->save();
+
+    return redirect()->route('edit_user', $user->id)->with('success', 'User berhasil diperbarui!');
+    }
 }

@@ -15,9 +15,6 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a href="/home" class="nav-item nav-link active">Home</a>
-                <a href="{{ route('buku_tamu') }}" class="nav-item nav-link">Galeri Tamu</a>
-                <a href="{{ route('jadwal') }}" class="nav-item nav-link">Jadwal Tamu</a>
-                <a href="{{ route('entry_tamu') }}" class="nav-item nav-link">Entry Tamu</a>
                 <a href="{{ route('contact') }}" class="nav-item nav-link">Contact Us</a>
                
             @if (Route::has('login'))
@@ -38,7 +35,7 @@
                                 @endauth
                             
                         @endif
-                 
+            </div> 
         </div>
     </nav>
     <!-- Navbar End -->

@@ -336,7 +336,7 @@ select.form-control {
                                 <thead>
                                     <tr>
                                         <th>Nama</th>
-                                        <th>Tujuan Dinas</th>
+                                        <th>Asal Dinas</th>
                                         <th>Alamat</th>
                                         <th>Tanggal</th>
                                         <th>Keperluan</th>
@@ -348,7 +348,7 @@ select.form-control {
                                     @foreach($tamu as $item)
                                         <tr>
                                             <td>{{ $item->nama }}</td>
-                                            <td>{{ $item->opd->dinas }}</td>
+                                            <td>{{ $item->dinas }}</td>
                                             <td>{{ $item->alamat }}</td>
                                             <td>{{ $item->created_at->format('d-m-Y') }}</td>
                                             <td>
@@ -363,7 +363,7 @@ select.form-control {
                                                 <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" aria-label="Edit" href ="{{ route('edit.tamu' , $item->id)  }}">
         <i class="fas fa-edit" style="font-size: 24px; color: blue;"></i>
     </a>
-    <form action="{{ route('delete', $item->id) }}" method="POST" style="display:inline;">
+    <form action="{{ route('delete_tamu', $item->id) }}" method="POST" style="display:inline;">
         @csrf
         @method('DELETE')
         <button type="submit" class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-red-500" aria-label="Delete" style="border: none; background: none;" onclick="confirmation(event)">
@@ -404,7 +404,7 @@ select.form-control {
         <span class="close" onclick="closeEditModal()">&times;</span>
         <div id="modal-body">
             <!-- Form content here -->
-            <form id="editForm" action="{{ route('tamu.update', $item->id) }}" method="POST" enctype="multipart/form-data">>
+            <form id="editForm" action="" method="POST" enctype="multipart/form-data">>
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" id="edit-id">
@@ -538,8 +538,8 @@ window.onclick = function(event) {
             const urlToRedirect = form.action;
 
             swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this profile!",
+                title: "Apa kamu ingin menghapus ini?",
+                text: "Data yang dihapus tidak bisa kembali!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,

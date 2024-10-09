@@ -198,7 +198,17 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="opd_id">Asal Dinas</label>
+                                        <label for="alamat">Alamat</label>
+                                        <input type="text" name="alamat" id="alamat" class="form-control" value="{{ old('alamat', $tamu->alamat) }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="alamat">Asal Dinas (Opsional)</label>
+                                        <input type="text" name="dinas" id="dinas" class="form-control" value="{{ old('dinas', $tamu->dinas) }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="opd_id">Tujuan Dinas</label>
                                         <select id="opd_id" name="opd_id" class="form-control">
                                             <option value="" disabled>Select Dinas</option>
                                             @foreach($opd as $item)
@@ -207,11 +217,6 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="alamat">Alamat</label>
-                                        <input type="text" name="alamat" id="alamat" class="form-control" value="{{ old('alamat', $tamu->alamat) }}" required>
                                     </div>
 
                                     <div class="form-group">

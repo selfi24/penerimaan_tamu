@@ -37,6 +37,7 @@ class User extends Authenticatable
         'username',
         'opd_id',
         'alamat',
+        'password',
     ];
 
     /**

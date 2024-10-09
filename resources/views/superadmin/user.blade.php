@@ -318,8 +318,8 @@ textarea.form-control {
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                    <th>Username</th>
                                 <th>Nama</th>
+                                <th>Username</th>
                                 <th>Email</th>
                                 <th>WhatsApp</th>
                                 <th>Alamat</th>
@@ -364,26 +364,41 @@ textarea.form-control {
                         </div>
                     </div>
 
-                     <!-- Pagination Links -->
-<div class="pagination">
+                    <div class="pagination">
     <ul class="pagination">
-        @foreach ($users->links()->elements as $element)
-            @if (is_array($element))
-                @foreach ($element as $number => $link)
-                    @if ($number == $users->currentPage())
-                        <li class="page-item active">
-                            <span class="page-link">{{ $number }}</span>
-                        </li>
-                    @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $link }}">{{ $number }}</a>
-                        </li>
-                    @endif
-                @endforeach
+        @if ($users->onFirstPage())
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $users->previousPageUrl() }}">Previous</a>
+            </li>
+        @endif
+
+        @foreach ($users->getUrlRange(1, $users->lastPage()) as $number => $url)
+            @if ($number == $users->currentPage())
+                <li class="page-item active">
+                    <span class="page-link">{{ $number }}</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $url }}">{{ $number }}</a>
+                </li>
             @endif
         @endforeach
+
+        @if ($users->hasMorePages())
+            <li class="page-item">
+                <a class="page-link" href="{{ $users->nextPageUrl() }}">Next</a>
+            </li>
+        @else
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        @endif
     </ul>
-</div>
+            </div>
 
                 </div>
             </div>

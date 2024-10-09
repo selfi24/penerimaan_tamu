@@ -14,23 +14,11 @@
           </div>
         </div>
 
-        <div class="col-lg-2 col-6 footer-links">
+        <div class="col-lg-3 col-10 ml-12 footer-links">
           <h4>Useful Links</h4>
           <ul>
             <li><a href="/home">Home</a></li>
-            <li><a href="/buku_tamu">Galeri Tamu</a></li>
-            <li><a href="/jadwal">Jadwal Tamu</a></li>
-            <li><a href="/entry_tamu">Entry Tamu</a></li>
             <li><a href="/contact">Contact Us</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-2 col-6 footer-links">
-          <h4>Our Services</h4>
-          <ul>
-            <li><a href="/entry_tamu"">Add Tamu</a></li>
-            <li><a href="/buku_tamu">Galery</a></li>
-            <li><a href="/jadwal">Calendar</a></li>
           </ul>
         </div>
 
@@ -39,8 +27,8 @@
           <p>Gedung OPD Bersama</p>
           <p>Jl. Kartini No.1, Panggang I, Panggang</p>
           <p>Kec. Jepara, Kabupaten Jepara, Jawa Tengah</p>
-          <p class="mt-4"><strong>Phone:</strong> <span>(0291) 591492</span></p>
-          <p><strong>Email:</strong> <span>data@jepara.go.id</span></p>
+          <p class="mt-4"><strong>Phone :</strong> <span>(0291) 591492</span></p>
+          <p><strong>Email   :</strong> <span>data@jepara.go.id</span></p>
         </div>
 
       </div>

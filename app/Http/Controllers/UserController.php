@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\DB;
+
 use App\Models\User;
 
 use App\Models\Tamu;
@@ -24,30 +26,78 @@ use App\Models\Opd;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $usertype = Auth()->user()->usertype;
-
-        if($usertype == 'admin')
-        {
-
-        $user = User::all()->count();
-
-        $opd = Opd::all()->count();
-
-        $tamu = Tamu::all()->count();
-
-        return view('super.index',compact('user','opd','tamu'));
-
+    
+        if ($usertype == 'admin') {
+            $selectedOpdId = Auth()->user()->opd_id; // Dapatkan ID OPD untuk pengguna yang sedang login
+            $selectedOpd = Opd::find($selectedOpdId)->dinas;
+            $year = $request->input('year', date('Y')); // Dapatkan tahun dari permintaan atau default ke tahun saat ini
+    
+            // Hitung total tamu untuk OPD yang dipilih
+            $tamu = Tamu::where('opd_id', $selectedOpdId)->count();
+    
+            // Ambil data tamu untuk OPD yang dipilih dan tahun
+            $guestData = Tamu::select(DB::raw('MONTH(created_at) as month, COUNT(*) as total'))
+                ->whereYear('created_at', $year)
+                ->where('opd_id', $selectedOpdId)
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get();
+    
+            // Siapkan data untuk chart
+            $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            $totals = array_fill(0, 12, 0); // Inisialisasi array total untuk 12 bulan
+            $years = [];
+    
+            foreach ($guestData as $data) {
+                $totals[$data->month - 1] = (int)$data->total; // Agregasi total untuk bulan
+            }
+    
+            // Mengumpulkan tahun unik dari data tamu
+            $guestYears = Tamu::select(DB::raw('YEAR(created_at) as year'))
+                ->where('opd_id', $selectedOpdId)
+                ->distinct()
+                ->pluck('year');
+    
+            foreach ($guestYears as $guestYear) {
+                if (!in_array($guestYear, $years)) {
+                    $years[] = $guestYear; // Kumpulkan tahun unik
+                }
+            }
+    
+            return view('super.index', compact( 'tamu', 'guestData', 'months', 'totals', 'selectedOpdId', 'selectedOpd', 'years','year'));
+        } else if ($usertype == 'user') {
+            return view('admin.home');
         }
-        else if($usertype == 'user')
+    }
+    
+   public function fetchGuestData(Request $request)
+{
+    $selectedOpdId = Auth()->user()->opd_id; // Dapatkan ID OPD untuk pengguna yang sedang login
+    $year = $request->input('year', date('Y')); // Dapatkan tahun dari permintaan
 
-            {
+    // Ambil data tamu untuk OPD yang dipilih dan tahun
+    $guestData = Tamu::select(DB::raw('MONTH(created_at) as month, COUNT(*) as total'))
+        ->whereYear('created_at', $year)
+        ->where('opd_id', $selectedOpdId)
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
 
-               return view('admin.home');
+    // Siapkan data untuk respons
+    $totals = array_fill(0, 12, 0); // Inisialisasi array total untuk 12 bulan
+    foreach ($guestData as $data) {
+        $totals[$data->month - 1] = (int)$data->total; // Isi total untuk bulan yang sesuai
+    }
 
-            } 
-        }
+    $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    return response()->json(['totals' => $totals, 'months' => $months]);
+}
+
+    
 
     public function show()
     {
@@ -137,6 +187,7 @@ public function upload(Request $request)
    $validator = Validator::make($request->all(), [
     'nama' => 'required|string|max:255',
     'alamat' => 'required|string',
+    'dinas' => 'nullable|string',
     'opd_id' =>'required|exists:opds,id',
     'keperluan' => 'required|string|string|max:100000',
     'webcamImage' => 'nullable|string',
@@ -163,7 +214,7 @@ $tamu = new Tamu();
 $tamu->nama = $request->input('nama');
 $tamu->alamat = $request->input('alamat');
 $tamu->opd_id = $request->input('opd_id');
-$tamu->dinas = auth()->user()->id;
+$tamu->dinas = $request->input('dinas');
 $tamu->keperluan = $request->input('keperluan');
 $tamu->webcamImage = $imagePath;
 $tamu->save();
@@ -175,31 +226,34 @@ public function tamu()
 {
 
     $user = auth()->user();
+
+    $authUser = auth()->user();
     
     $opd = Opd::all();
 
     $tamu = Tamu::where('opd_id', $user->opd_id)->get();
    
-    return view('super.entry_tamu', compact('tamu','opd'));
+    return view('super.entry_tamu', compact('tamu','opd', 'authUser'));
 }
 
 public function show_tamu()
     {
         $user = auth()->user();
 
+        $authUser = auth()->user();
+
         $userOpdId = $user->opd_id;
 
-        $tamu = Tamu::where('opd_id', $userOpdId)
-                ->orWhere('dinas', $user->id) // Assuming 'created_by' is the field storing who created the entry
-                ->get();
+        $tamu = Tamu::where('opd_id', $user->opd_id)->get();
+   
         $opd = Opd::all() ?? [];
 
         Log::info('Tamu data retrieved', ['count' => $tamu->count(), 'data' => $tamu]);
 
-        return view('super.show_tamu',compact('tamu','opd'));
+        return view('super.show_tamu',compact('tamu','opd', 'authUser'));
     }
 
-    public function delete($id)
+    public function delete_tamu($id)
     {
         Log::info('Attempting to delete tamu with ID: ' . $id);
 
@@ -229,20 +283,17 @@ public function show_tamu()
 
     public function up_tamu(Request $request, $id)
     {
-       
-        // Find the Tamu by ID
+
     $tamu = Tamu::find($id);
 
-    // Check if Tamu exists
     if (!$tamu) {
         return redirect()->back()->with('error', 'Tamu not found.');
     }
 
-    // Validate the request data
     $validated = $request->validate([
         'nama' => 'required|string|max:255',
         'alamat' => 'required|string',
-        'opd_id' => 'required|exists:opds,id',
+        'dinas' => 'nullable|string',
         'keperluan' => 'required|string|max:1000',
         'webcamImage' => 'nullable|file|image|max:2048',// For file upload
          ]);
@@ -250,7 +301,7 @@ public function show_tamu()
     // Update Tamu record fields
     $tamu->nama = $request->input('nama');
     $tamu->alamat = $request->input('alamat');
-    $tamu->opd_id = $request->input('opd_id');
+    $tamu->dinas = $request->input('dinas');
     $tamu->keperluan = $request->input('keperluan');
 
 
@@ -274,7 +325,27 @@ public function show_tamu()
     // Save the updated Tamu record
     $tamu->save();
 
-        return redirect()->back()->with('success', 'Tamu berhasil di update!');
+        return redirect()->back()->with('success', 'Data tamu berhasil diperbarui!');
+    }
+
+    public function getGuestData()
+    {
+        $admin = Auth::user(); // Assuming you have an authenticated user
+        $opd = $user->opd_id; // Get the OPD associated with the logged-in admin
+    
+        $tamu = Tamu::where('opd_id', $opd)
+                       ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as count'))
+                       ->groupBy('month')
+                       ->orderBy('month')
+                       ->get();
+    
+        // Prepare the data for the chart
+        $guestData = [];
+        foreach ($tamu as $tamu) {
+            $guestData[date('F', mktime(0, 0, 0, $tamu->month, 1))] = $tamu->count;
+        }
+    
+        return view('super.main', compact('guestData', 'opd'));
     }
    
 }

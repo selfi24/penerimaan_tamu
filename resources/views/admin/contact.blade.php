@@ -44,11 +44,11 @@
                 </div>
                 <div class="mb-4 wow fadeInUp" data-wow-delay="0.2s">
                     <h5 class="text-primary">Whatsapp</h5>
-                    <p>08990167365</p>
+                    <p>(0291) 591492</p>
                 </div>
                 <div class="wow fadeInUp" data-wow-delay="0.3s">
                     <h5 class="text-primary">Email</h5>
-                    <p>info@example.com</p>
+                    <p>data@jepara.go.id</p>
                 </div>
             </div>
 
