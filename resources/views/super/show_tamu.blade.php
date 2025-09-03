@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert@2"></script>
 
-    <title>Guest List</title>
+    <title>Tamu</title>
     
     <style>
   /* General Styles */
@@ -286,6 +286,42 @@ select.form-control {
     border-radius: 0.25rem;
 }
 
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination .page-item {
+    margin: 0 0.1rem;
+}
+
+.pagination .page-link {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    color: #007bff;
+    text-decoration: none;
+    border: 1px solid #ddd;
+}
+
+.pagination .page-link:hover {
+    background-color: #f8f9fa;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+}
+
 /* Responsive Table */
 .table-responsive {
     overflow-x: auto;
@@ -310,7 +346,39 @@ select.form-control {
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">List Tamu</h4>
-                        <p class="card-description">List of all guests with their details</p>         
+                         <!-- Form Pencarian -->
+                    <!-- Form Pencarian -->
+<form action="{{ route('cari.tamu') }}" method="GET" class="form-inline mb-4">
+    @csrf
+    <div class="form-group mx-2">
+        <label for="dinas" class="mr-2">Asal Dinas</label>
+        <div class="input-group">
+            <input type="text" name="dinas" id="dinas" class="form-control" 
+                   value="{{ request()->get('dinas') }}" placeholder="Cari Asal Dinas">
+            <div class="input-group-append">
+                <!-- Make the icon a clickable submit button -->
+                <button type="submit" class="input-group-text" aria-label="Cari Asal Dinas">
+                    <i class="fas fa-search"></i> <!-- Ikon Pencarian -->
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group mx-2 ml-auto">
+        <label for="tanggal_awal" class="mr-2">Tanggal Awal</label>
+        <input type="date" name="tanggal_awal" id="tanggal_awal" 
+               class="form-control" value="{{ request()->get('tanggal_awal') }}">
+    </div>
+    <div class="form-group mx-2">
+        <label for="tanggal_akhir" class="mr-2">Tanggal Akhir</label>
+        <input type="date" name="tanggal_akhir" id="tanggal_akhir" 
+               class="form-control" value="{{ request()->get('tanggal_akhir') }}">
+    </div>
+    
+    <!-- Tombol Pencarian Tanggal -->
+    <button type="submit" class="btn btn-primary mx-2">Cari</button>
+</form>
+                    <p class="card-description">List of all guests with their details</p>    
+                         
                         <div class="div_center">
                         @if (session('success'))
                             <div class="alert alert-success border-left-success alert-dismissible fade show" role="alert">
@@ -321,13 +389,13 @@ select.form-control {
                             </div>
                         @endif
 
-                        @if ($errors->any())
-                            <div class="alert alert-danger border-left-danger" role="alert">
-                                <ul class="pl-4 my-2">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
+                        <div class="div_center">
+                        @if (session('message'))
+                            <div class="alert alert-danger border-left-danger alert-dismissible fade show" role="alert">
+                                {{ session('message') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
                         @endif
 
@@ -383,10 +451,48 @@ select.form-control {
                             </table>
                         </div>
                     </div>
+                    <div class="pagination">
+    <ul class="pagination">
+        @if ($tamu->onFirstPage())
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        @else
+            <li class="page-item">
+                <a class="page-link" href="{{ $tamu->previousPageUrl() }}">Previous</a>
+            </li>
+        @endif
+
+        @foreach ($tamu->getUrlRange(1, $tamu->lastPage()) as $number => $url)
+            @if ($number == $tamu->currentPage())
+                <li class="page-item active">
+                    <span class="page-link">{{ $number }}</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $url }}">{{ $number }}</a>
+                </li>
+            @endif
+        @endforeach
+
+        @if ($tamu->hasMorePages())
+            <li class="page-item">
+                <a class="page-link" href="{{ $tamu->nextPageUrl() }}">Next</a>
+            </li>
+        @else
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        @endif
+    </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+
     
 
     <!-- Modal HTML -->

@@ -56,10 +56,6 @@
         </ul>
     </div>
 @endif
-                    
-                        <p class="card-description">
-                            Update your profile information below.
-                        </p>
 
 
                         <form action="{{ route('update_profil') }}" method="POST">
@@ -106,16 +102,11 @@
                                 </div>
                             
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </form>
 
-                        <!-- Delete Profile Form -->
-                        <form action="{{ route('destroy_profil') }}" method="POST" style="margin-top: 20px;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-danger" onclick="confirmation(event)">Delete Profile</button>
-                         </form>
+                       
                     </div>
                 </div>
             </div>
@@ -125,28 +116,7 @@
         
 
     @include('superadmin.footer')
-
-    
-    <script type="text/javascript">
-    function confirmation(ev) {
-        ev.preventDefault();
-        const form = ev.target.closest('form');
-        const urlToRedirect = form.action;
-
-        swal({
-            title: "Apa kamu ingin menghapus ini?",
-            text: "Data yang dihapus tidak bisa kembali!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-            if (willDelete) {
-                form.submit();
-            }
-        });
-    }
-</script>
+ 
 <script>
 document.getElementById('whatsapp').addEventListener('input', function (e) {
     let value = e.target.value;

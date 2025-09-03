@@ -66,6 +66,7 @@ route::get('/show_tamu', [UserController::class,'show_tamu'])->name('show_tamu')
 Route::delete('/show_tamu/{id}', [UserController::class, 'delete_tamu'])->name('delete_tamu');
 Route::get('/tamu/{id}/edit', [UserController::class, 'ed_tamu'])->name('edit.tamu');
 Route::post('/up_tamu/{id}', [UserController::class, 'up_tamu'])->name('tamu.update');
+Route::get('/cari', [UserController::class, 'cari'])->name('cari.tamu');
 });
 
 Route::middleware('auth')->group(function () {
@@ -111,6 +112,7 @@ route::get('/buka_tamu', [SuperController::class,'buka_tamu'])->name('buka_tamu'
 Route::delete('/buka_tamu/{id}', [SuperController::class, 'delete_tamu'])->name('delete_tamu');
 Route::get('/buka_tamu/{id}/edit', [SuperController::class, 'tamu_edit'])->name('tamu_edit');
 Route::post('/buka_tamu/{id}', [SuperController::class, 'update_tamu'])->name('update_tamu');
+Route::get('/cari_tamu', [SuperController::class, 'cari'])->name('cari');
 });
 
 Route::get('/guest-data', [UserController::class, 'getGuestData'])->name('guest.data')->middleware('auth');

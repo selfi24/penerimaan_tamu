@@ -418,3 +418,204 @@ public function edit_user(Request $request)
                         text: 'Number of Guests'
                     }
                 },
+
+                forgot password
+                <a href="{{ route('password.request') }}" class="ml-auto mb-0 text-sm">Forgot Password ?</a>
+                          
+
+                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Register<i class="fa fa-arrow-right ms-3"></i></a>  
+
+                                    @endif
+
+                                    
+                <li class="nav-item"> <a class="nav-link" href="{{ route('pengguna') }}">Users</a></li>
+
+                
+
+
+
+          <div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <h4 class="card-title">Diagram Total Tamu</h4>
+                <a href="{{ route('buka_tamu') }}" class="text-info">View all</a>
+  </div>
+  <p class="font-weight-500">Menampilkan seluruh data tamu yang masuk sesuai dinas.</p>
+                <canvas id="userAreaPieChart" width="350" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const labels = @json($labels); // Labels untuk setiap dinas
+    const counts = @json($counts); // Jumlah tamu berdasarkan dinas
+    const chartColors = @json($chartColors); // Warna untuk setiap dinas
+
+    // Mendapatkan konteks untuk canvas
+    const ctxDinas = document.getElementById('dinas-chart').getContext('2d');
+
+    // Membuat Bar Chart untuk asal dinas
+    new Chart(ctxDinas, {
+        type: 'bar', // Bar chart
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: chartColors, // Menggunakan warna yang sudah ditetapkan
+                borderColor: '#ffffff', // Border putih untuk setiap bar
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top', // Menampilkan legend di atas
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Dinas' // Label untuk sumbu X
+                    }
+                },
+                y: {
+                    min: 0,
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Jumlah Tamu' // Label untuk sumbu Y
+                    }
+                }
+            }
+        },
+    });
+});
+
+</script>
+
+
+<div class="row mb-4 px-3">
+                                <small class="font-weight-bold">Don't have an account ? <a class="text-danger" href="{{ route('register') }}">Register</a></small>
+                            </div>
+
+                            <!-- Edit Guest Modal HTML -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <div id="modal-body">
+            <!-- Form content here -->
+            <form id="editForm" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" id="edit-id">
+                <div class="form-group">
+                    <label for="edit-nama">Nama</label>
+                    <input type="text" name="nama" id="edit-nama" class="form-control" required>
+                </div>
+                <div class="form-group">
+                <label for="edit-opd">Asal Dinas</label>
+                <div class="select-container">
+                <select class="form-control" name="opd" id="edit-opd" required aria-label="Floating label select example">
+                    <option value="" disabled selected>Pilih Dinas</option>
+                    @foreach($opd as $opd)
+                        <option value="{{ $opd->id }}" {{ old('opd' == $tamus->opd_id) == $opd->id ? 'selected' : '' }}>
+                            {{ $opd->dinas }}
+                        </option>
+                    @endforeach
+                    
+                    
+                    </select>
+                     </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-alamat">Alamat</label>
+                    <input type="text" name="alamat" id="edit-alamat" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-keperluan">Keperluan</label>
+                    <textarea name="keperluan" id="edit-keperluan" class="form-control" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-photo">Foto</label>
+                    <input type="file" name="photo" id="edit-photo" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Tamu</button>
+            </form>
+        </div>
+    </div>
+</div>
+super
+<!-- Delete Profile Form -->
+                                         
+<form action="{{ route('profile.destroy') }}" method="POST" style="margin-top: 20px;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-danger" style="border-radius: 10px;" onclick="confirmation(event)">Hapus</button>
+                         </form>
+<script type="text/javascript">
+    function confirmation(ev) {
+        ev.preventDefault();
+        const form = ev.target.closest('form');
+        const urlToRedirect = form.action;
+
+        swal({
+            title: "Apa kamu yakin menghapus akun ini?",
+            text: "Akun yang dihapus tidak bisa kembali!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                form.submit();
+            }
+        });
+    }
+</script>
+superadmin
+<div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Total User</p>
+                      <p class="fs-30 mb-2">{{$users}}</p>
+                      <p></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Delete Profile Form -->
+ <form action="{{ route('destroy_profil') }}" method="POST" style="margin-top: 20px;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-danger" onclick="confirmation(event)">Hapus</button>
+                         </form>
+    
+    <script type="text/javascript">
+    function confirmation(ev) {
+        ev.preventDefault();
+        const form = ev.target.closest('form');
+        const urlToRedirect = form.action;
+
+        swal({
+            title: "Apa kamu yakin menghapus akun ini?",
+            text: "Akun yang dihapus tidak bisa kembali!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                form.submit();
+            }
+        });
+    }
+</script>

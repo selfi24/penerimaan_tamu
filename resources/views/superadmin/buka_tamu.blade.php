@@ -4,8 +4,8 @@
     @include('superadmin.css')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert@2"></script>
-
-    <title>Guest List</title>
+    
+    <title>Tamu</title>
     
     <style>
   /* General Styles */
@@ -226,6 +226,18 @@ textarea.form-control {
     border-color: #0062cc;
 }
 
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545; /* Merah standar untuk tombol hapus */
+    border-color: #dc3545;
+}
+
+/* Gaya saat hover */
+.btn-danger:hover {
+    background-color: #c82333; /* Merah lebih gelap saat hover */
+    border-color: #bd2130;
+}
+
 /* Pagination Styles */
 .pagination {
     display: flex;
@@ -281,7 +293,39 @@ textarea.form-control {
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">List Tamu</h4>
-                        <p class="card-description">List of all guests with their details</p>         
+                        <p class="card-description">List of all guests with their details</p>       
+                          <!-- Form Pencarian -->
+                    <form action="{{ route('cari') }}" method="GET" class="form-inline mb-4">
+                        @csrf
+                        <div class="form-group mx-2">
+        <label for="dinas" class="mr-2">Asal Dinas</label>
+        <div class="input-group">
+            <input type="text" name="dinas" id="dinas" class="form-control" 
+                   value="{{ request()->get('dinas') }}" placeholder="Cari Asal Dinas">
+            <div class="input-group-append">
+                <!-- Make the icon a clickable submit button -->
+                <button type="submit" class="input-group-text" aria-label="Cari Asal Dinas">
+                    <i class="fas fa-search"></i> <!-- Ikon Pencarian -->
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group mx-2 ml-auto">
+        <label for="tanggal_awal" class="mr-2">Tanggal Awal</label>
+        <input type="date" name="tanggal_awal" id="tanggal_awal" 
+               class="form-control" value="{{ request()->get('tanggal_awal') }}">
+    </div>
+    <div class="form-group mx-2">
+        <label for="tanggal_akhir" class="mr-2">Tanggal Akhir</label>
+        <input type="date" name="tanggal_akhir" id="tanggal_akhir" 
+               class="form-control" value="{{ request()->get('tanggal_akhir') }}">
+    </div>
+    
+    <!-- Tombol Pencarian Tanggal -->
+    <button type="submit" class="btn btn-primary mx-2">Cari</button>
+</form>
+                    <p class="card-description">List of all guests with their details</p>    
+                         
                         <div class="div_center">
                         @if(session()->has('message'))
                         <div class="alert alert-danger">
@@ -314,8 +358,8 @@ textarea.form-control {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @if($tamu->isNotEmpty())
-                                    @foreach($tamu as $item)
+                                @if($tamus->isNotEmpty())
+                                    @foreach($tamus as $item)
                                         <tr>
                                             <td>{{ $item->nama }}</td>
                                             <td>{{ $item->dinas }}</td>
@@ -331,16 +375,16 @@ textarea.form-control {
                                                     <i class="fas fa-camera" style="font-size: 24px; color: black;"></i>
                                                 </a></td>
                                                 <td>
-    <a class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white" aria-label="Edit" href ="{{ route('tamu_edit' , $item->id)  }}">
-        <i class="fas fa-edit" style="font-size: 24px; color: blue;"></i>
-    </a>
-    <form action="{{ route('delete_tamu', $item->id) }}" method="POST" style="display:inline;">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-red-500" aria-label="Delete" style="border: none; background: none;" onclick="confirmation(event)">
-            <i class="fas fa-trash" style="font-size: 24px; color: red;"></i>
-        </button>
-    </form>
+                                               <!-- Tombol Edit -->
+                                            <a href="{{ route('tamu_edit', $item->id) }}" class="btn btn-primary">Edit</a>
+                                            <form action="{{ route('delete_tamu', $item->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger mx-1" onclick="confirmation(event)">
+                        Hapus
+                    </button>
+                </form>
+
 </td>
 
                                         </tr>
@@ -357,18 +401,18 @@ textarea.form-control {
 
                     <div class="pagination">
     <ul class="pagination">
-        @if ($tamu->onFirstPage())
+        @if ($tamus->onFirstPage())
             <li class="page-item disabled">
                 <span class="page-link">Previous</span>
             </li>
         @else
             <li class="page-item">
-                <a class="page-link" href="{{ $tamu->previousPageUrl() }}">Previous</a>
+                <a class="page-link" href="{{ $tamus->previousPageUrl() }}">Previous</a>
             </li>
         @endif
 
-        @foreach ($tamu->getUrlRange(1, $tamu->lastPage()) as $number => $url)
-            @if ($number == $tamu->currentPage())
+        @foreach ($tamus->getUrlRange(1, $tamus->lastPage()) as $number => $url)
+            @if ($number == $tamus->currentPage())
                 <li class="page-item active">
                     <span class="page-link">{{ $number }}</span>
                 </li>
@@ -379,9 +423,9 @@ textarea.form-control {
             @endif
         @endforeach
 
-        @if ($tamu->hasMorePages())
+        @if ($tamus->hasMorePages())
             <li class="page-item">
-                <a class="page-link" href="{{ $tamu->nextPageUrl() }}">Next</a>
+                <a class="page-link" href="{{ $tamus->nextPageUrl() }}">Next</a>
             </li>
         @else
             <li class="page-item disabled">
@@ -389,7 +433,11 @@ textarea.form-control {
             </li>
         @endif
     </ul>
+    </div>
+                </div>
             </div>
+        </div>
+    </div>
 
     
     
@@ -403,53 +451,6 @@ textarea.form-control {
             </div>
         </div>
     </div>
-<!-- Edit Guest Modal HTML -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditModal()">&times;</span>
-        <div id="modal-body">
-            <!-- Form content here -->
-            <form id="editForm" action="" method="POST">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="id" id="edit-id">
-                <div class="form-group">
-                    <label for="edit-nama">Nama</label>
-                    <input type="text" name="nama" id="edit-nama" class="form-control" required>
-                </div>
-                <div class="form-group">
-                <label for="edit-opd">Asal Dinas</label>
-                <div class="select-container">
-                <select class="form-control" name="opd" id="edit-opd" required aria-label="Floating label select example">
-                    <option value="" disabled selected>Pilih Dinas</option>
-                    @foreach($opd as $opd)
-                        <option value="{{ $opd->id }}" {{ old('opd' == $item->opd_id) == $opd->id ? 'selected' : '' }}>
-                            {{ $opd->dinas }}
-                        </option>
-                    @endforeach
-                    
-                    
-                    </select>
-                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="edit-alamat">Alamat</label>
-                    <input type="text" name="alamat" id="edit-alamat" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-keperluan">Keperluan</label>
-                    <textarea name="keperluan" id="edit-keperluan" class="form-control" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit-photo">Foto</label>
-                    <input type="file" name="photo" id="edit-photo" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-primary">Update Tamu</button>
-            </form>
-        </div>
-    </div>
-</div>
 
 
 <!-- Details Modal HTML -->

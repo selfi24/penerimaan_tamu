@@ -168,7 +168,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="name">Username<span class="small text-danger">*</span></label>
-                                            <input type="text" id="name" class="form-control" name="name" placeholder="Username" value="{{ old('name') }}">
+                                            <input type="text" id="name" class="form-control" name="name" placeholder="Username" value="{{ old('name') }}" required>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
@@ -180,7 +180,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label class="form-control-label" for="email">Email<span class="small text-danger">*</span></label>
-                                            <input type="email" id="email" class="form-control" name="email" placeholder="example@example.com" value="{{ old('email') }}">
+                                            <input type="email" id="email" class="form-control" name="email" placeholder="example@example.com" value="{{ old('email') }}" required>
                                         </div>
                                     </div>                                
                                     <div class="col-lg-6">
@@ -198,7 +198,7 @@
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label class="form-control-label" for="opd">Asal Dinas<span class="small text-danger">*</span></label>
-                                            <select id="opd" name="opd" class="form-control">
+                                            <select id="opd" name="opd" class="form-control" required>
                                                 <option value="" disabled selected>Select Dinas</option>
                                                 @foreach($opd as $item)
                                                     <option value="{{ $item->id }}">{{ $item->dinas }}</option>
@@ -211,13 +211,13 @@
                                     <div class="col-lg-6">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="new_password">New Password<span class="small text-danger">*</span></label>
-                                            <input type="password" id="new_password" class="form-control" name="new_password" placeholder="New Password">
+                                            <input type="password" id="new_password" class="form-control" name="new_password" placeholder="New Password" required>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group focused">
                                             <label class="form-control-label" for="new_password_confirmation">Confirm Password<span class="small text-danger">*</span></label>
-                                            <input type="password" id="new_password_confirmation" class="form-control" name="new_password_confirmation" placeholder="Confirm Password">
+                                            <input type="password" id="new_password_confirmation" class="form-control" name="new_password_confirmation" placeholder="Confirm Password" required>
                                         </div>
                                     </div>
                                 </div>

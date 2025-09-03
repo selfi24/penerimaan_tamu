@@ -3,6 +3,8 @@
 
 <head>
 @include('super.css')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+   
 <style>
     /* Card Styling */
 .card {
@@ -191,26 +193,19 @@
 
                             <!-- Save Button -->
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary" style="border-radius: 10px;">Simpan profil</button>
+                                <button type="submit" class="btn btn-primary" style="border-radius: 10px;">Simpan</button>
                             </div>
                         </form>
-                                        <!-- Delete Profile Form -->
-                                         
-                         <form action="{{ route('profile.destroy') }}" method="POST" style="margin-top: 20px;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-danger" style="border-radius: 10px;" onclick="confirmation(event)">Hapus profil</button>
-                         </form>
-                                        
+
                         
-                         
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-@include('super.footer')     
+@include('super.footer')  
+
 <script>
 document.getElementById('whatsapp').addEventListener('input', function (e) {
     let value = e.target.value;

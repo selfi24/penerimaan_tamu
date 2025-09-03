@@ -165,7 +165,7 @@ class UserController extends Controller
 
     $user->save();
 
-    return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
+    return redirect()->route('profile.edit')->with('success', 'Profil berhasil diperbarui!');
 }
 
 public function destroy(Request $request)
@@ -178,7 +178,7 @@ public function destroy(Request $request)
     // Optionally, log the user out after deletion
     Auth::logout();
 
-    return redirect()->route('home')->with('message', 'Profile deleted successfully.');
+    return redirect()->route('home')->with('message', 'Profil berhasil dihapus!.');
 }
 
 public function upload(Request $request)
@@ -219,7 +219,7 @@ $tamu->keperluan = $request->input('keperluan');
 $tamu->webcamImage = $imagePath;
 $tamu->save();
 
-    return redirect()->route('tamu')->with('success', 'Data tamu berhasil dikirim');
+    return redirect()->route('tamu')->with('success', 'Data tamu berhasil ditambah!');
 }
 
 public function tamu()
@@ -239,13 +239,11 @@ public function tamu()
 public function show_tamu()
     {
         $user = auth()->user();
-
         $authUser = auth()->user();
 
         $userOpdId = $user->opd_id;
+        $tamu = Tamu::where('opd_id', $user->opd_id)->paginate(10);
 
-        $tamu = Tamu::where('opd_id', $user->opd_id)->get();
-   
         $opd = Opd::all() ?? [];
 
         Log::info('Tamu data retrieved', ['count' => $tamu->count(), 'data' => $tamu]);
@@ -269,7 +267,7 @@ public function show_tamu()
 
         Log::info('Tamu successfully deleted with ID: ' . $id);
         // Redirect or return a response
-        return redirect()->back()->with('message', 'Data tamu berhasil dihapus.');
+        return redirect()->back()->with('message', 'Data tamu berhasil dihapus!.');
     }
 
     public function ed_tamu($id)
@@ -347,6 +345,46 @@ public function show_tamu()
     
         return view('super.main', compact('guestData', 'opd'));
     }
-   
-}
 
+    public function cari(Request $request)
+{
+    // Ambil OPD pengguna yang sedang login
+    $userOpdId = auth()->user()->opd_id;
+
+    $dinas = $request->dinas;
+
+    // Mulai query untuk model Tamu
+    $query = Tamu::query();
+
+    // Filter berdasarkan 'opd_id' sesuai pengguna yang sedang login
+    $query->where('opd_id', $userOpdId);
+
+    // Filter berdasarkan 'dinas' jika ada
+    if ($dinas) {
+        $query->where('dinas', 'LIKE', '%' . $dinas . '%');
+    }
+
+    // Filter berdasarkan tanggal
+    if ($request->has('tanggal_awal') && $request->has('tanggal_akhir')) {
+        $tanggalAwal = $request->tanggal_awal;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        // Validasi rentang tanggal
+        if ($tanggalAwal && $tanggalAkhir) {
+            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir]);
+        }
+    }
+
+    // Ambil hasil query dengan paginate
+    $tamu = $query->paginate(10);
+
+    // Ambil semua data OPD (opsional, jika diperlukan dalam view)
+    $opd = Opd::all() ?? [];
+
+    // Log informasi data tamu yang diambil
+    Log::info('Tamu data retrieved', ['count' => $tamu->count(), 'data' => $tamu]);
+
+    // Kirim data ke view
+    return view('super.show_tamu', compact('tamu', 'opd'));
+}
+}

@@ -34,6 +34,28 @@ class SuperController extends Controller
 
         $user = Opd::all()->count();
 
+        $opdCount = Opd::select('id', DB::raw('count(*) as total'))
+                    ->groupBy('id')
+                    ->get();
+
+    $opdLabels = [];
+    $opdCounts = [];
+    $opdColors = [
+    '#FFA07A', '#FF7F50', '#FFD700', '#ADFF2F', '#40E0D0',
+    '#87CEFA', '#9370DB', '#FF69B4', '#F08080', '#DDA0DD',
+    '#E9967A', '#98FB98', '#AFEEEE', '#4682B4', '#FF6347',
+    '#FFDAB9', '#CD5C5C', '#66CDAA', '#B0C4DE', '#FFA500',
+    '#7B68EE', '#6A5ACD', '#5F9EA0', '#8FBC8F'
+    ];
+
+    foreach ($opdCount as $opd) {
+        $opdItem = Opd::find($opd->id); // Fetch OPD name
+        if ($opdItem) {
+            $opdLabels[] = $opdItem->dinas; // OPD names
+            $opdCounts[] = $opd->total;    // Count per OPD
+            }
+    }
+
         $user = Tamu::all()->count();
 
         $tamuCounts = Tamu::select('opd_id', DB::raw('count(*) as count'))
@@ -45,14 +67,12 @@ class SuperController extends Controller
     $counts = [];
     $chartColors = [];
 
-    foreach ($tamuCounts as $item) {
-        $opd = Opd::find($item->opd_id); // Fetch the Dinas name
+    foreach ($tamuCounts as $index => $item) {
+        $opd = Opd::find($item->opd_id); // Ambil nama dinas berdasarkan opd_id
         if ($opd) {
-            $labels[] = $opd->dinas; // Get Dinas name
-            $counts[] = $item->count; // Get count
-            // Generate a random color for each Dinas
-            $chartColors[] = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-            $totalAgencies[$opd->dinas] = $item->count; // For displaying in the legend
+            $labels[] = $opd->dinas; // Nama dinas
+            $counts[] = $item->count; // Jumlah tamu
+            $chartColors[] = $opdColors[$index]; // Warna yang sudah ditentukan
         }
     }
 
@@ -67,7 +87,7 @@ class SuperController extends Controller
 
         $tamu = Tamu::all()->count();
 
-        return view('superadmin.index',compact('user','admin','users','opd','tamu','labels', 'counts', 'chartColors', 'totalAgencies' ));
+        return view('superadmin.index',compact('user','admin','users','opd','tamu','labels', 'counts', 'chartColors', 'totalAgencies', 'opdLabels', 'opdCounts', 'opdColors'));
 
         }
         else if($usertype == 'user')
@@ -137,7 +157,7 @@ class SuperController extends Controller
 
     $user->save();
 
-    return redirect()->back()->with('message', 'Profile updated successfully!');
+    return redirect()->back()->with('message', 'Profil berhasil diperbarui!');
     }
 
 
@@ -151,7 +171,7 @@ class SuperController extends Controller
     // Optionally, log the user out after deletion
     Auth::logout();
 
-    return redirect()->route('home')->with('message', 'Profile deleted successfully.');
+    return redirect()->route('home')->with('message', 'Profil berhasil dihapus.');
     }
    
 
@@ -165,13 +185,21 @@ class SuperController extends Controller
 // Store a newly created department in storage
     public function add_dinas(Request $request)
     { 
+        $request->validate([
+            'opd' => 'required|unique:opds,dinas|max:255', // Pastikan 'opd' unik dalam kolom 'dinas'
+        ], [
+            'opd.required' => 'Nama OPD tidak boleh kosong.',
+            'opd.unique' => 'Nama OPD sudah ada, masukkan nama lain.',
+            'opd.max' => 'Nama OPD tidak boleh lebih dari 255 karakter.',
+        ]);
+
     $opd = new Opd;
 
     $opd->dinas= $request->opd;
 
     $opd->save();
     // Redirect to the form with a success message
-    return redirect()->back()->with('message', 'Dinas added successfully!');
+    return redirect()->back()->with('message', 'Dinas berhasil ditambah!');
     }
 
 
@@ -186,13 +214,21 @@ class SuperController extends Controller
 
     public function update_opd(Request $request,$id)
     {
+        $request->validate([
+            'dinas' => 'required|unique:opds,dinas|max:255',
+        ], [
+            'dinas.required' => 'Nama OPD tidak boleh kosong.',
+            'dinas.unique' => 'Nama OPD sudah ada, masukkan nama lain.',
+            'dinas.max' => 'Nama OPD tidak boleh lebih dari 255 karakter.',
+        ]);
+
         $opd = Opd::find($id);
 
         $opd->dinas = $request->dinas;
 
         $opd->save();
 
-        return redirect()->back()->with('message', 'Dinas updated successfully!');
+        return redirect()->back()->with('message', 'Dinas berhasil diperbarui!');
     
     }
 
@@ -239,7 +275,7 @@ class SuperController extends Controller
     $users->save();
        
 
-        return redirect()->back()->with('success', 'User berhasil Diupdate.');
+        return redirect()->back()->with('success', 'User berhasil diperbarui.');
     }
 
     // Method to delete a user
@@ -248,7 +284,7 @@ class SuperController extends Controller
         $user = User::find($id);
         $user->delete();
 
-        return redirect()->back()->with('message', 'User deleted successfully.');
+        return redirect()->back()->with('message', 'User berhasil dihapus.');
     }
 
     public function add()
@@ -269,12 +305,13 @@ class SuperController extends Controller
         'username' => 'nullable|string|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
-        'whatsapp' =>'required|string|regex:/^\d+$/|min:10|max:15',
+        'whatsapp' =>'nullable|string|regex:/^\d+$/|min:10|max:15',
         'alamat' => 'nullable|string|max:255',
         'opd_id' =>'nullable|exists:opds,id',
         'new_password' => 'required|string|confirmed|min:8',
     ]);
 
+    
     // Tentukan usertype
     $usertype = !empty($request->opd) ? 'admin' : 'user';
 
@@ -282,6 +319,10 @@ class SuperController extends Controller
     $user->name = $request->name;
     $user->username = $request->username;
     $user->email = $request->email;
+    
+    if (User::where('email', $request->email)->exists()) {
+        return redirect()->back()->withErrors(['email' => 'Email sudah terdaftar']);
+    }
     $user->alamat = $request->alamat;
     $user->whatsapp = $request->whatsapp;
     $user->opd_id= $request->opd;
@@ -291,7 +332,7 @@ class SuperController extends Controller
     }
     $user->save();
 
-    return redirect()->back()->with('success', 'User berhasil ditambah!');
+    return redirect()->back()->with('success', 'Admin berhasil ditambah!');
     }
 
 
@@ -343,7 +384,7 @@ class SuperController extends Controller
     $users->save();
        
 
-    return redirect()->back()->with('success', 'User berhasil Diupdate.');
+    return redirect()->back()->with('success', 'User berhasil diperbarui.');
     }
 
     // Method to delete a user
@@ -367,40 +408,35 @@ class SuperController extends Controller
 
     public function req(Request $request)
     {
-    $user = Auth::user();
-
-    $opd = Opd::all();
-
-    $request->validate([
-        'username' => 'nullable|string|max:255',
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'whatsapp' =>'nullable|string|regex:/^\d+$/|min:10|max:15',
-        'alamat' => 'nullable|string|max:255',
-        'opd_id' =>'nullable|exists:opds,id',
-        'current_password' => 'nullable|string|min:8',
-        'new_password' => 'nullable|string|min:8|confirmed',  ]);
-
-    $usertype = !empty($request->opd) ? 'admin' : 'user';
-
-    $user = new User();
-    $user->name = $request->name;
-    $user->username = $request->username;
-    $user->email = $request->email;
-    $user->alamat = $request->alamat;
-    $user->opd_id= $request->opd;
-    $user->whatsapp = $request->whatsapp;
-    $user->usertype = $usertype;
-    if ($request->filled('new_password')) {
-        if (Hash::check($request->current_password, $user->password)) {
+        $user = Auth::user();
+        $opd = Opd::all();
+        $request->validate([
+            'username' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'whatsapp' =>'nullable|string|regex:/^\d+$/|min:10|max:15',
+            'alamat' => 'nullable|string|max:255',
+            'opd_id' =>'nullable|exists:opds,id',
+            'new_password' => 'required|string|confirmed|min:8',
+        ]);
+    
+        // Tentukan usertype
+        $usertype = !empty($request->opd) ? 'admin' : 'user';
+    
+        $user = new User();
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->email = $request->email;
+        $user->alamat = $request->alamat;
+        $user->whatsapp = $request->whatsapp;
+        $user->opd_id= $request->opd;
+        $user->usertype = $usertype; // Pastikan ini tidak null
+        if ($request->new_password) {
             $user->password = Hash::make($request->new_password);
-        } else {
-            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
-    }
-    $user->save();
+        $user->save();
 
-    return redirect()->back()->with('success', 'User berhasil dibuat!');
+    return redirect()->back()->with('success', 'User berhasil ditambah!');
     }
 
 
@@ -460,13 +496,13 @@ class SuperController extends Controller
     {
         $user = auth()->user();
 
-        $tamu = Tamu::paginate(10);
+        $tamus = Tamu::paginate(10);
 
         $opd = Opd::all() ?? [];
 
-        Log::info('Tamu data retrieved', ['count' => $tamu->count(), 'data' => $tamu]);
+        Log::info('Tamu data retrieved', ['count' => $tamus->count(), 'data' => $tamus]);
 
-        return view('superadmin.buka_tamu',compact('tamu','opd'));
+        return view('superadmin.buka_tamu',compact('tamus','opd'));
     }
 
     public function delete_tamu($id)
@@ -633,5 +669,43 @@ class SuperController extends Controller
     $user->save();
 
     return redirect()->route('edit_user', $user->id)->with('success', 'User berhasil diperbarui!');
+    }
+
+    public function cari(Request $request)
+    {
+        // Ambil nilai pencarian dari request
+    $dinas = $request->dinas;
+    $tanggal = $request->created_at;
+
+    // Mulai query untuk model Tamu
+    $query = Tamu::query();
+
+    // Filter berdasarkan 'dinas' jika ada
+    if ($dinas) {
+        $query->where('dinas', 'LIKE', '%' . $dinas . '%');
+    }
+
+    if ($request->has('tanggal_awal') && $request->has('tanggal_akhir')) {
+        $tanggalAwal = $request->tanggal_awal;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        // Validasi rentang tanggal
+        if ($tanggalAwal && $tanggalAkhir) {
+            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir]);
+        }
+    }
+
+    // Ambil hasil query dengan paginate
+    $tamus= $query->paginate(10);
+
+    // Ambil semua data OPD
+    $opd = Opd::all() ?? [];
+
+    // Log informasi data tamu yang diambil
+    Log::info('Tamu data retrieved', ['count' => $tamus->count(), 'data' => $tamus]);
+    
+
+    // Kirim data ke view
+    return view('superadmin.buka_tamu', compact('tamus', 'opd'));
     }
 }

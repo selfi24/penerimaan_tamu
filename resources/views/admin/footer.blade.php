@@ -7,17 +7,15 @@
             <span class="sitename">Penerimaan Tamu</span>
           </a>
           <p>Aplikasi ini dapat digunakan untuk pendataan tamu yang datang berkunjung ke Pemerintahan Kota Jepara. Untuk informasi lebih lanjut dapat mengunjungi sosial media di bawah ini.</p>
-          <div class="social-links d-flex mt-4">
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
-          </div>
+          
         </div>
 
         <div class="col-lg-3 col-10 ml-12 footer-links">
           <h4>Useful Links</h4>
           <ul>
             <li><a href="/home">Home</a></li>
+            <li><a href="/buku_tamu">Galeri Tamu</a></li>
+            <li><a href="/jadwal">Histori Tamu</a></li>
             <li><a href="/contact">Contact Us</a></li>
           </ul>
         </div>
@@ -41,7 +39,7 @@
         <!-- You can delete the links only if you've purchased the pro version. -->
         <!-- Licensing information: https://bootstrapmade.com/license/ -->
         <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by Diskominfo Jepara</a>
+        Designed by Selfi Sifiyana</a>
       </div>
     </div>
 

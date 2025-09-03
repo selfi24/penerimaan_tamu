@@ -12,8 +12,8 @@
     <div class="container py-10">
             <div class="row w-100"> 
                 <div class="text-center service-header wow fadeInUp" data-wow-delay="0.2s">
-<h6 class="section-title bg-white text-center text-primary px-3">Jadwal Tamu</h6>
-        <h1 class="display-5 mb-3" style="font-size: 1.2rem; color: gray;">Jadwal Tamu yang datang berkunjung</h1>
+<h6 class="section-title bg-white text-center text-primary px-3">Galeri Tamu</h6>
+        <h1 class="display-5 mb-3" style="font-size: 1.2rem; color: gray;">Galeri Tamu yang datang berkunjung</h1>
 </div>
 
                  <!-- Gallery Items -->

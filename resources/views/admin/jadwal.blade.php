@@ -106,21 +106,21 @@
     <!-- Page Title -->
     <div class="page-title light-background">
       <div class="containner">
-        <h1>Jadwal Tamu</h1>
+        <h1>Histori Tamu</h1>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="/">Home</a></li>
-            <li class="current">Jadwal Tamu</li>
+            <li class="current">Histori Tamu</li>
           </ol>
         </nav>
       </div>
       </div>
       
 <div class="text-center service-header wow fadeInUp" data-wow-delay="0.2s">
-<h6 class="section-title bg-white text-center text-primary px-3">Jadwal Tamu</h6>
-        <h1 class="display-5 mb-3" style="font-size: 1.2rem; color: gray;">Jadwal Tamu yang datang berkunjung</h1>
+<h6 class="section-title bg-white text-center text-primary px-3">Histori Tamu</h6>
+        <h1 class="display-5 mb-3" style="font-size: 1.2rem; color: gray;">Histori Tamu yang datang berkunjung</h1>
 </div>
-<h2 class="text-calendar" id="monthYear"></h2>
+<h2 class="text-calendar" id="monthYear"style="cursor: pointer;"></h2>
 <div id="calendar" class="calendar-container"></div>
 <div class="pagination">
         <button class="btn-cal" id="prevMonth">Sebelumnya</button>
@@ -143,85 +143,125 @@
             }
         }
 
-    async function generateCalendar(month, year) {
-        const calendar = document.getElementById('calendar');
-        calendar.innerHTML = '';
+        async function generateCalendar(month, year) {
+    const calendar = document.getElementById('calendar');
+    calendar.innerHTML = '';
 
-        const guests = await fetchCalendarData(year, month);
-        const monthYear = document.getElementById('monthYear');
-        monthYear.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+    const guests = await fetchCalendarData(year, month);
+    console.log("Fetched Guests:", guests); // Check what guests are received
 
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthYear = document.getElementById('monthYear');
+    monthYear.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
 
-        // Header hari
-        const daysOfWeek = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        daysOfWeek.forEach(day => {
-            const header = document.createElement('div');
-            header.className = 'calendar-header';
-            header.textContent = day;
-            calendar.appendChild(header);
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Header hari
+    const daysOfWeek = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    daysOfWeek.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-header';
+        header.textContent = day;
+        calendar.appendChild(header);
+    });
+
+    // Hari kosong
+    for (let i = 0; i < firstDay; i++) {
+        const blankDay = document.createElement('div');
+        blankDay.className = 'calendar-day';
+        calendar.appendChild(blankDay);
+    }
+
+    // Hari dalam bulan
+    for (let day = 1; day <= daysInMonth; day++) {
+        const calendarDay = document.createElement('div');
+        calendarDay.className = 'calendar-day';
+        calendarDay.innerHTML = `${day}`;
+
+        // Cek tamu pada hari ini
+        const dayGuests = guests.filter(tamu => {
+            const guestDate = new Date(tamu.created_at);
+            return guestDate.getDate() === day && guestDate.getMonth() === month;
         });
 
-        // Hari kosong
-        for (let i = 0; i < firstDay; i++) {
-            const blankDay = document.createElement('div');
-            blankDay.className = 'calendar-day';
-            calendar.appendChild(blankDay);
-        }
+        const displayedGuests = dayGuests.slice(0, 2); // Tampilkan 2 tamu pertama
+        displayedGuests.forEach(tamu => {
+            const guestElement = document.createElement('div');
+            guestElement.className = 'meeting';
 
-        // Hari dalam bulan
-        for (let day = 1; day <= daysInMonth; day++) {
-            const calendarDay = document.createElement('div');
-            calendarDay.className = 'calendar-day';
-            calendarDay.innerHTML = `${day}`;
+            // Handle empty or null values
+            const asalDinas = tamu.opd && tamu.opd.dinas ? tamu.opd.dinas : ''; // Use empty string if null
+            const tujuanDinas = tamu.dinas || ''; // Use empty string if null
 
-            // Cek tamu pada hari ini
-            const dayGuests = guests.filter(tamu => {
-        const guestDate = new Date(tamu.created_at);
-        return guestDate.getDate() === day && guestDate.getMonth() === month; // Include month check
-    });
-    
-    const displayedGuests = dayGuests.slice(0, 2); // Tampilkan 2 tamu pertama
-    displayedGuests.forEach(tamu => {
-        const guestElement = document.createElement('div');
-        guestElement.className = 'meeting';
-        guestElement.innerHTML = `<a href="#" onclick="handleGuestClick('${tamu.opd.dinas}', '${tamu.dinas}'); return false;">${tamu.opd.dinas}</a>`;
-        calendarDay.appendChild(guestElement);
-    });
+            // Only display the link if asalDinas is not empty
+            if (asalDinas) {
+                guestElement.innerHTML = `<a href="#" onclick="handleGuestClick('${asalDinas}', '${tujuanDinas}'); return false;">${asalDinas}</a>`;
+            }
+            calendarDay.appendChild(guestElement);
+        });
 
-            if (dayGuests.length > 2) {
-                const moreLink = document.createElement('div');
-                moreLink.className = 'more-link';
-                moreLink.innerHTML = `+${dayGuests.length - 2} more`;
-                
-                  moreLink.onclick = () => {
-                    const guestList = dayGuests.map(tamu => {
-                    return `<a href="#" onclick="handleGuestClick('${tamu.opd.dinas}', '${tamu.dinas}'); return false;">${tamu.opd.dinas}</a>`;
+        if (dayGuests.length > 2) {
+            const moreLink = document.createElement('div');
+            moreLink.className = 'more-link';
+            moreLink.innerHTML = `+${dayGuests.length - 2} more`;
+            
+            moreLink.onclick = () => {
+                const guestList = dayGuests.map(tamu => {
+                    const asal = tamu.opd && tamu.opd.dinas ? tamu.opd.dinas : ''; // Use empty string if null
+                    const tujuan = tamu.dinas || ''; // Use empty string if null
+
+                    // Only include if asal is not empty
+                    return asal ? `<a href="#" onclick="handleGuestClick('${asal}', '${tujuan}'); return false;">${asal}</a>` : '';
                 }).join('<br>');
-   Swal.fire({
-                    title: `Tamu untuk ${day} ${month + 1}/${year}`,
+                
+                Swal.fire({
+                    title: `Data Tamu ${day}/${month + 1}/${year}`,
                     html: guestList || 'Tidak ada tamu untuk hari ini.',
                     confirmButtonText: 'OK'
                 });
             };
 
-                calendarDay.appendChild(moreLink);
-               
-            }
-            calendar.appendChild(calendarDay);
+            calendarDay.appendChild(moreLink);
         }
+        
+        calendar.appendChild(calendarDay);
     }
-    
-    function handleGuestClick(opdId, dinas) {
+}
+
+function handleGuestClick(opdId, dinas) {
+    const asalDinas = dinas || ''; // Default to empty string if dinas is null
+    const tujuanDinas = opdId || ''; // Default to empty string if opdId is null
+
+    // Only show asalDinas if it's not empty
+    const asalDinasDisplay = asalDinas ? asalDinas : '';
+    const tujuanDinasDisplay = tujuanDinas ? tujuanDinas : '';
+
     Swal.fire({
         title: 'Informasi Tamu',
-        html: `<strong>Asal Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${dinas}</span>
-            <strong>Tujuan Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${opdId}</span>`,
+        html: `<strong>Asal Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${asalDinasDisplay}</span>
+               <strong>Tujuan Dinas :</strong> <span style="margin-bottom: 10px; display: block;">${tujuanDinasDisplay}</span>`,
         confirmButtonText: 'OK'
     });
-    
 }
+
+
+document.getElementById('monthYear').addEventListener('click', () => {
+        const inputYear = prompt("Masukkan tahun (0000):", currentYear);
+        const inputMonth = prompt("Masukkan bulan (1-12):", currentMonth + 1);
+        
+        if (inputYear && inputMonth) {
+            const year = parseInt(inputYear);
+            const month = parseInt(inputMonth) - 1; // Convert to zero-based index
+
+            if (year && month >= 0 && month <= 11) {
+                currentYear = year;
+                currentMonth = month;
+                generateCalendar(currentMonth, currentYear);
+            } else {
+                alert("Tahun atau bulan tidak valid!");
+            }
+        }
+    });
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('prevMonth').addEventListener('click', () => {

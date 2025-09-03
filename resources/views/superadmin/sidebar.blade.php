@@ -23,7 +23,7 @@
         <i class="settings-close ti-close"></i>
         <div class="tab-content" id="setting-content">
           <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel" aria-labelledby="todo-section">
-            <h4 class="px-3 text-muted mt-5 font-weight-light mb-0">Profil</h4>
+            <h4 class="px-3 text-muted mt-5 font-weight-light mb-0">Informasi</h4>
             <div class="events pt-4 px-3">
               <div class="wrapper d-flex mb-2">
                 <i class="ti-control-record text-primary mr-2"></i>
@@ -120,7 +120,6 @@
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="{{ route('opd') }}">Dinas</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{ route('user') }}">Admin</a></li>
-                <li class="nav-item"> <a class="nav-link" href="{{ route('pengguna') }}">Users</a></li>
                 </ul>
             </div>
           
